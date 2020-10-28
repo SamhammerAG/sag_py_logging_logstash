@@ -24,14 +24,6 @@ class Constants:
     # maximum number of events to be sent to Logstash in one batch (i.e. using a single connection)
     QUEUED_EVENTS_BATCH_SIZE = 50
     # maximum number of events to be updated within one SQLite statement
-    DATABASE_EVENT_CHUNK_SIZE = 750
-    # timeout in seconds to "connect" (i.e. open) the SQLite database
-    DATABASE_TIMEOUT = 5.0
-    # list of record attributes which are filtered out from the event sent
-    # to Logstash. By default, the list consists of some Python standard LogRecord attributes.
-    # Usually this list does not need to be modified. Add/Remove elements to
-    # exclude/include them in the Logstash event, for the full list see:
-    # http://docs.python.org/library/logging.html#logrecord-attributes
     FORMATTER_RECORD_FIELD_SKIP_LIST = [
         'args', 'asctime', 'created', 'exc_info', 'exc_text', 'filename',
         'funcName', 'id', 'levelname', 'levelno', 'lineno', 'module',

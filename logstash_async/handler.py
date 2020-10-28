@@ -7,9 +7,10 @@ from logging import Handler
 
 from logstash_async.constants import constants
 from logstash_async.formatter import LogstashFormatter
-from logstash_async.utils import import_string, safe_log_via_print
+from logstash_async.utils import safe_log_via_print
 from logstash_async.worker import LogProcessingWorker
 import logstash_async
+from .transport import HttpTransport
 
 
 class ProcessingError(Exception):
@@ -20,14 +21,7 @@ class AsynchronousLogstashHandler(Handler):
     """Python logging handler for Logstash. Sends events over TCP by default.
     :param host: The host of the logstash server, required.
     :param port: The port of the logstash server, required.
-    :param database_path: The path to the file containing queued events, required.
-                          Use None to use a in-memory cache.
     :param transport: Callable or path to a compatible transport class.
-    :param ssl_enable: Should SSL be enabled for the connection? Default is False.
-    :param ssl_verify: Should the server's SSL certificate be verified?
-    :param keyfile: The path to client side SSL key file (default is None).
-    :param certfile: The path to client side SSL certificate file (default is None).
-    :param ca_certs: The path to the file containing recognized CA certificates.
     :param enable: Flag to enable log processing (default is True, disabling
                    might be handy for local testing, etc.)
     :param event_ttl: Amount of time in seconds to wait before expiring log messages in
@@ -37,22 +31,15 @@ class AsynchronousLogstashHandler(Handler):
     _worker_thread = None
 
     # ----------------------------------------------------------------------
-    # pylint: disable=too-many-arguments
-    def __init__(self, host, port, database_path, transport='logstash_async.transport.TcpTransport',
-                 ssl_enable=False, ssl_verify=True, keyfile=None, certfile=None, ca_certs=None,
-                 enable=True, event_ttl=None, encoding='utf-8', **kwargs):
+    def __init__(self, host, port,
+                 ssl_enable=True,
+                 enable=True, event_ttl=None, transport = None, encoding='utf-8', **kwargs):
         super().__init__()
         self._host = host
         self._port = port
-        self._database_path = database_path
-        self._transport_path = transport
         self._ssl_enable = ssl_enable
-        self._ssl_verify = ssl_verify
-        self._keyfile = keyfile
-        self._certfile = certfile
-        self._ca_certs = ca_certs
         self._enable = enable
-        self._transport = None
+        self._transport = transport
         self._event_ttl = event_ttl
         self._encoding = encoding
         self._setup_transport(**kwargs)
@@ -81,28 +68,11 @@ class AsynchronousLogstashHandler(Handler):
     def _setup_transport(self, **kwargs):
         if self._transport is not None:
             return
-
-        transport_args = dict(
-            host=self._host,
+        self._transport = HttpTransport(host=self._host,
             port=self._port,
             timeout=constants.SOCKET_TIMEOUT,
             ssl_enable=self._ssl_enable,
-            ssl_verify=self._ssl_verify,
-            keyfile=self._keyfile,
-            certfile=self._certfile,
-            ca_certs=self._ca_certs,
             **kwargs)
-        if isinstance(self._transport_path, str):
-            transport_class = import_string(self._transport_path)
-            self._transport = transport_class(**transport_args)
-        elif callable(self._transport_path):
-            self._transport = self._transport_path(**transport_args)
-        elif hasattr(self._transport_path, 'send'):
-            self._transport = self._transport_path
-        else:
-            raise RuntimeError(
-                'Invalid transport path: must be an importable module path, '
-                'a class or factory function or an instance.')
 
     # ----------------------------------------------------------------------
     def _start_worker_thread(self):
@@ -114,11 +84,6 @@ class AsynchronousLogstashHandler(Handler):
             port=self._port,
             transport=self._transport,
             ssl_enable=self._ssl_enable,
-            ssl_verify=self._ssl_verify,
-            keyfile=self._keyfile,
-            certfile=self._certfile,
-            ca_certs=self._ca_certs,
-            database_path=self._database_path,
             cache=logstash_async.EVENT_CACHE,
             event_ttl=self._event_ttl)
         AsynchronousLogstashHandler._worker_thread.start()

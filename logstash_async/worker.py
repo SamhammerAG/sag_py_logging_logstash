@@ -14,7 +14,6 @@ from limits.storage import MemoryStorage
 from limits.strategies import FixedWindowRateLimiter
 
 from logstash_async.constants import constants
-from logstash_async.database import DatabaseCache, DatabaseLockedError
 from logstash_async.memory_cache import MemoryCache
 from logstash_async.utils import safe_log_via_print
 
@@ -32,11 +31,6 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
         self._port = kwargs.pop('port')
         self._transport = kwargs.pop('transport')
         self._ssl_enable = kwargs.pop('ssl_enable')
-        self._ssl_verify = kwargs.pop('ssl_verify')
-        self._keyfile = kwargs.pop('keyfile')
-        self._certfile = kwargs.pop('certfile')
-        self._ca_certs = kwargs.pop('ca_certs')
-        self._database_path = kwargs.pop('database_path')
         self._memory_cache = kwargs.pop('cache')
         self._event_ttl = kwargs.pop('event_ttl')
 
@@ -49,7 +43,6 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
         self._queue = Queue()
 
         self._event = None
-        self._database = None
         self._last_event_flush_date = None
         self._non_flushed_event_count = None
         self._logger = None
@@ -71,7 +64,7 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
     def run(self):
         self._reset_flush_counters()
         self._setup_logger()
-        self._setup_database()
+        self._setup_memory_cache()
         try:
             self._fetch_events()
         except Exception as exc:
@@ -105,11 +98,8 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
             self._rate_limit_item = parse_rate_limit(rate_limit_setting)
 
     # ----------------------------------------------------------------------
-    def _setup_database(self):
-        if self._database_path:
-            self._database = DatabaseCache(path=self._database_path, event_ttl=self._event_ttl)
-        else:
-            self._database = MemoryCache(cache=self._memory_cache, event_ttl=self._event_ttl)
+    def _setup_memory_cache(self):
+            self._memory_cache = MemoryCache(cache=self._memory_cache, event_ttl=self._event_ttl)
 
     # ----------------------------------------------------------------------
     def _fetch_events(self):
@@ -128,7 +118,7 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
                 self._flush_queued_events(force=force_flush)
                 self._delay_processing()
                 self._expire_events()
-            except (DatabaseLockedError, ProcessingError):
+            except (ProcessingError):
                 if self._shutdown_requested():
                     return
 
@@ -143,13 +133,7 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
     def _process_event(self):
         try:
             self._write_event_to_database()
-        except DatabaseLockedError as exc:
-            self._safe_log(
-                u'debug',
-                u'Database is locked, will try again later (queue length %d)',
-                self._queue.qsize(),
-                exc=exc)
-            raise
+
         except Exception as exc:
             self._log_processing_error(exc)
             raise ProcessingError from exc
@@ -159,10 +143,8 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
     # ----------------------------------------------------------------------
     def _expire_events(self):
         try:
-            self._database.expire_events()
-        except DatabaseLockedError:
-            # Nothing to handle, if it fails, we will either successfully publish
-            # these messages next time or we will delete them on the next pass.
+            self._memory_cache.expire_events()
+        except:
             pass
 
     # ----------------------------------------------------------------------
@@ -192,7 +174,7 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
 
     # ----------------------------------------------------------------------
     def _write_event_to_database(self):
-        self._database.add_event(self._event)
+        self._memory_cache.add_event(self._event)
         self._non_flushed_event_count += 1
 
     # ----------------------------------------------------------------------
@@ -218,7 +200,7 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
                     u'error',
                     u'An error occurred while sending events: %s',
                     exc)
-                self._database.requeue_queued_events(queued_events)
+                self._memory_cache.requeue_queued_events(queued_events)
                 break
             except Exception as exc:
                 self._safe_log(
@@ -226,7 +208,7 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
                     u'An error occurred while sending events: %s',
                     exc,
                     exc=exc)
-                self._database.requeue_queued_events(queued_events)
+                self._memory_cache.requeue_queued_events(queued_events)
                 break
             else:
                 self._delete_queued_events_from_database()
@@ -235,13 +217,8 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
     # ----------------------------------------------------------------------
     def _fetch_queued_events_for_flush(self):
         try:
-            return self._database.get_queued_events()
-        except DatabaseLockedError as exc:
-            self._safe_log(
-                u'debug',
-                u'Database is locked, will try again later (queue length %d)',
-                self._queue.qsize(),
-                exc=exc)
+            return self._memory_cache.get_queued_events()
+
         except Exception as exc:
             # just log the exception and hope we can recover from the error
             self._safe_log(u'exception', u'Error retrieving queued events: %s', exc, exc=exc)
@@ -249,8 +226,8 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
     # ----------------------------------------------------------------------
     def _delete_queued_events_from_database(self):
         try:
-            self._database.delete_queued_events()
-        except DatabaseLockedError:
+            self._memory_cache.delete_queued_events()
+        except:
             pass  # nothing to handle, if it fails, we delete those events in a later run
 
     # ----------------------------------------------------------------------
