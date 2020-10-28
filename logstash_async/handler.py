@@ -31,6 +31,7 @@ class AsynchronousLogstashHandler(Handler):
     _worker_thread = None
 
     # ----------------------------------------------------------------------
+    # pylint: disable=too-many-arguments
     def __init__(self, host, port,
                  ssl_enable=True,
                  enable=True, event_ttl=None, transport=None, encoding='utf-8', **kwargs):

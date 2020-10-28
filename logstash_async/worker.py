@@ -118,7 +118,7 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
                 self._flush_queued_events(force=force_flush)
                 self._delay_processing()
                 self._expire_events()
-            except (ProcessingError):
+            except ProcessingError:
                 if self._shutdown_requested():
                     return
 
