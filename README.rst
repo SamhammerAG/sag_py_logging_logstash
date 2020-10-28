@@ -23,6 +23,8 @@ Example::
 
     from logstash_async.handler import AsynchronousLogstashHandler
     from logstash_async.formatter import LogstashFormatter
+    import logging
+
     logstash_handler = AsynchronousLogstashHandler(
         host='my_host',
         port=123,
@@ -31,7 +33,7 @@ Example::
         index_name = 'my_index')
     logstash_formatter = LogstashFormatter( extra_prefix='',
     extra={'customer': "name", 'ap_environment': "local"})
-    logstash_handler.setFormatter(logstash_formatter)`
+    logstash_handler.setFormatter(logstash_formatter)
 
     logging_handlers = []
     logging_handlers.append(logstash_handler)
