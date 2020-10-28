@@ -33,7 +33,7 @@ class AsynchronousLogstashHandler(Handler):
     # ----------------------------------------------------------------------
     def __init__(self, host, port,
                  ssl_enable=True,
-                 enable=True, event_ttl=None, transport = None, encoding='utf-8', **kwargs):
+                 enable=True, event_ttl=None, transport=None, encoding='utf-8', **kwargs):
         super().__init__()
         self._host = host
         self._port = port

@@ -99,7 +99,7 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
 
     # ----------------------------------------------------------------------
     def _setup_memory_cache(self):
-            self._memory_cache = MemoryCache(cache=self._memory_cache, event_ttl=self._event_ttl)
+        self._memory_cache = MemoryCache(cache=self._memory_cache, event_ttl=self._event_ttl)
 
     # ----------------------------------------------------------------------
     def _fetch_events(self):
@@ -142,10 +142,7 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
 
     # ----------------------------------------------------------------------
     def _expire_events(self):
-        try:
-            self._memory_cache.expire_events()
-        except:
-            pass
+        self._memory_cache.expire_events()
 
     # ----------------------------------------------------------------------
     def _log_processing_error(self, exception):
@@ -225,10 +222,7 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
 
     # ----------------------------------------------------------------------
     def _delete_queued_events_from_database(self):
-        try:
-            self._memory_cache.delete_queued_events()
-        except:
-            pass  # nothing to handle, if it fails, we delete those events in a later run
+        self._memory_cache.delete_queued_events()
 
     # ----------------------------------------------------------------------
     def _queued_event_interval_reached(self):

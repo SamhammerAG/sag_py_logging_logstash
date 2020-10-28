@@ -57,6 +57,7 @@ class Transport(ABC):
     def close(self):
         pass
 
+
 class HttpTransport(Transport):
     """The :class:`HttpTransport <HttpTransport>` implements a client for the
     logstash plugin `inputs_http`.
@@ -97,7 +98,7 @@ class HttpTransport(Transport):
         super().__init__(host, port, timeout, ssl_enable, use_logging)
         self._username = kwargs.get('username', None)
         self._password = kwargs.get('password', None)
-        self._index_name = kwargs.get('index_name',None)
+        self._index_name = kwargs.get('index_name', None)
         self._max_content_length = kwargs.get('max_content_length', 100 * 1024 * 1024)
         self.__session = None
 
@@ -112,7 +113,7 @@ class HttpTransport(Transport):
         protocol = 'http'
         if self._ssl_enable:
             protocol = 'https'
-#TODO check path with index
+
         if self._index_name is not None:
             return f'{protocol}://{self._host}:{self._port}/{self._index_name}'
         return f'{protocol}://{self._host}:{self._port}'

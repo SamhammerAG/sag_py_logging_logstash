@@ -6,7 +6,6 @@
 from __future__ import print_function
 
 from datetime import datetime
-from importlib import import_module
 from itertools import chain, islice
 import sys
 import traceback
@@ -39,5 +38,3 @@ def safe_log_via_print(log_level, message, *args, **kwargs):
             exc_info = sys.exc_info()
             stack_trace = ''.join(traceback.format_exception(*exc_info))
             print(stack_trace, file=sys.stderr)
-
-
