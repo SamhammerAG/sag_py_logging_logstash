@@ -2,6 +2,9 @@
 python-logstash-async
 =====================
 
+.. image:: https://travis-ci.com/SamhammerAG/python-logstash-async.svg?branch=master
+    :target: https://travis-ci.com/SamhammerAG/python-logstash-async
+    :alt: Travis CI
 
 Python Logstash Async is an asynchronous Python logging handler to submit
 log events to a remote Logstash instance.
@@ -50,8 +53,7 @@ Local Installation
 
 To install from master branch just use the following command::
 
-    pip install git+https://github.com/SamhammerAG/python-logstash-async.git@master#python-logstash-async
-
+    pip install git+https://github.com/SamhammerAG/python-logstash-async.git
 Existing preprocessors
 
 

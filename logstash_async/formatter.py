@@ -29,7 +29,7 @@ class LogstashFormatter(logging.Formatter):
             message_type='python-logstash',
             tags=None,
             fqdn=False,
-            extra_prefix='extra',
+            extra_prefix='',
             extra=None,
             ensure_ascii=True,
             metadata=None,
@@ -51,19 +51,6 @@ class LogstashFormatter(logging.Formatter):
         self._prefetch_host(fqdn)
         self._prefetch_logsource()
         self._prefetch_program_name()
-
-    # ----------------------------------------------------------------------
-    def _prefetch_interpreter(self):
-        """Override when needed"""
-        self._interpreter = sys.executable
-
-    # ----------------------------------------------------------------------
-    def _prefetch_interpreter_version(self):
-        """Override when needed"""
-        self._interpreter_version = u'{}.{}.{}'.format(
-            sys.version_info.major,
-            sys.version_info.minor,
-            sys.version_info.micro)
 
     # ----------------------------------------------------------------------
     def _prefetch_host(self, fqdn):
@@ -92,7 +79,7 @@ class LogstashFormatter(logging.Formatter):
             'level': record.levelname,
             'logsource': self._logsource,
             'message': record.getMessage(),
-            'pid': record.process,
+            'process_id': record.process,
             'program': self._program_name,
             'type': self._message_type,
         }
