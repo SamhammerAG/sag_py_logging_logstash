@@ -13,6 +13,7 @@ import uuid
 
 from logstash_async.constants import constants
 
+
 try:
     import json
 except ImportError:
@@ -82,29 +83,27 @@ class LogstashFormatter(logging.Formatter):
             'process_id': record.process,
             'program': self._program_name,
             'type': self._message_type,
-            'func_name': record.funcName,
-            'line': record.lineno,
-            'logger_name': record.name,
-            'thread_name': record.threadName,
         }
         if self._metadata:
             message['@metadata'] = self._metadata
         if self._tags:
             message['tags'] = self._tags
 
-        if record.exc_info:
-            message.update({'stack_trace', self._format_exception(record.exc_info)})
-
         # record fields
-        dynamic_extra_fields = self._get_record_fields(record)
-        message.update(dynamic_extra_fields)
-        # prepare static extra fields
-        self._format_extra_fields()
-        message.update(self._extra)
+        record_fields = self._get_record_fields(record)
+        message.update(record_fields)
+        # prepare dynamic extra fields
+        extra_fields = self._get_extra_fields(record)
         # remove all fields to be excluded
+        self._remove_excluded_fields(message, extra_fields)
+        # wrap extra fields in configurable namespace
+        if self._extra_prefix:
+            message[self._extra_prefix] = extra_fields
+        else:
+            message.update(extra_fields)
 
         # move existing extra record fields into the configured prefix
-        # self._move_extra_record_fields_to_prefix(message)
+        self._move_extra_record_fields_to_prefix(message)
 
         return self._serialize(message)
 
@@ -115,7 +114,6 @@ class LogstashFormatter(logging.Formatter):
 
     # ----------------------------------------------------------------------
     def _get_record_fields(self, record):
-
         def value_repr(value):
             easy_types = (type(None), bool, str, int, float)
 
@@ -135,21 +133,25 @@ class LogstashFormatter(logging.Formatter):
         fields = {}
 
         for key, value in record.__dict__.items():
-            if key not in constants.FORMATTER_RECORD_FIELD_SKIP_LIST:
-                if self._extra_prefix and key not in constants.FORMATTER_LOGSTASH_MESSAGE_FIELD_LIST:
-                    key = self._extra_prefix + "." + key
-                fields[key] = value_repr(value)
+            fields[key] = value_repr(value)
         return fields
 
     # ----------------------------------------------------------------------
-    def _format_extra_fields(self):
+    def _get_extra_fields(self, record):
+        extra_fields = {
+            'func_name': record.funcName,
+            'line': record.lineno,
+            'logger_name': record.name,
+            'process_name': record.processName,
+            'thread_name': record.threadName,
+        }
         # static extra fields
         if self._extra:
-            if self._extra_prefix:
-                extra_fields_with_prefix = {}
-                for key in self._extra:
-                    extra_fields_with_prefix[self._extra_prefix + "." + key] = self._extra[key]
-                self._extra = extra_fields_with_prefix
+            extra_fields.update(self._extra)
+        # exceptions
+        if record.exc_info:
+            extra_fields['stack_trace'] = self._format_exception(record.exc_info)
+        return extra_fields
 
     # ----------------------------------------------------------------------
     def _format_exception(self, exc_info):
@@ -160,6 +162,29 @@ class LogstashFormatter(logging.Formatter):
         else:
             stack_trace = ''
         return stack_trace
+
+    # ----------------------------------------------------------------------
+    def _remove_excluded_fields(self, message, extra_fields):
+        for fields in (message, extra_fields):
+            for field_name in list(fields):
+                if field_name in constants.FORMATTER_RECORD_FIELD_SKIP_LIST:
+                    del fields[field_name]
+
+    # ----------------------------------------------------------------------
+    def _move_extra_record_fields_to_prefix(self, message):
+        """
+        Anythng added by the "extra" keyword in the logging call will be moved into the
+        configured "extra" prefix. This way the event in Logstash will be clean and any extras
+        will be paired together in the configured extra prefix.
+        If not extra prefix is configured, the message will be kept as is.
+        """
+        if not self._extra_prefix:
+            return  # early out if no prefix is configured
+
+        field_skip_list = constants.FORMATTER_LOGSTASH_MESSAGE_FIELD_LIST + [self._extra_prefix]
+        for key in list(message):
+            if key not in field_skip_list:
+                message[self._extra_prefix][key] = message.pop(key)
 
     # ----------------------------------------------------------------------
     def _serialize(self, message):
