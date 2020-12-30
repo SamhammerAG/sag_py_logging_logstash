@@ -100,11 +100,8 @@ class LogstashFormatter(logging.Formatter):
         message.update(dynamic_extra_fields)
         # prepare static extra fields
         self._format_extra_fields()
-        message.update(self._extra)
-        # remove all fields to be excluded
-
-        # move existing extra record fields into the configured prefix
-        # self._move_extra_record_fields_to_prefix(message)
+        if self._extra:
+            message.update(self._extra)
 
         return self._serialize(message)
 
@@ -128,6 +125,7 @@ class LogstashFormatter(logging.Formatter):
             elif isinstance(value, uuid.UUID):
                 return value.hex
             elif isinstance(value, easy_types):
+
                 return value
             else:
                 return repr(value)

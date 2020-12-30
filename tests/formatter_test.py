@@ -23,7 +23,7 @@ class ExceptionCatchingFileHandler(FileHandler):
 class LogstashFormatterTest(unittest.TestCase):
     def test_format(self):
         file_handler = ExceptionCatchingFileHandler(os.devnull)
-        file_handler.setFormatter(LogstashFormatter(ensure_ascii=False))
+        file_handler.setFormatter(LogstashFormatter())
         file_handler.emit(makeLogRecord({"msg": u"тест"}))
         file_handler.close()
 

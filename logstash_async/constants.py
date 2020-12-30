@@ -27,7 +27,7 @@ class Constants:
     FORMATTER_RECORD_FIELD_SKIP_LIST = [
         'args', 'asctime', 'created', 'exc_info', 'exc_text', 'filename', 'funcName',
         'id', 'levelname', 'levelno', 'lineno', 'message','module',
-        'msecs', 'msg', 'pathname', 'process',
+        'msecs', 'msg', 'name', 'pathname', 'process',
         'processName', 'relativeCreated', 'stack_info', 'thread', 'threadName']
     # fields to be set on the top-level of a Logstash event/message, do not modify this
     # unless you know what you are doing
