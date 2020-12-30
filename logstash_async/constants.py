@@ -26,7 +26,7 @@ class Constants:
     # maximum number of events to be updated within one SQLite statement
     FORMATTER_RECORD_FIELD_SKIP_LIST = [
         'args', 'asctime', 'created', 'exc_info', 'exc_text', 'filename', 'funcName',
-        'id', 'levelname', 'levelno', 'lineno', 'message','module',
+        'id', 'levelname', 'levelno', 'lineno', 'message', 'module',
         'msecs', 'msg', 'name', 'pathname', 'process',
         'processName', 'relativeCreated', 'stack_info', 'thread', 'threadName']
     # fields to be set on the top-level of a Logstash event/message, do not modify this

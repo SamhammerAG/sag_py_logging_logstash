@@ -134,7 +134,8 @@ class LogstashFormatter(logging.Formatter):
 
         for key, value in record.__dict__.items():
             if key not in constants.FORMATTER_RECORD_FIELD_SKIP_LIST:
-                if self._extra_prefix and key not in constants.FORMATTER_LOGSTASH_MESSAGE_FIELD_LIST:
+                if self._extra_prefix \
+                        and key not in constants.FORMATTER_LOGSTASH_MESSAGE_FIELD_LIST:
                     key = self._extra_prefix + "." + key
                 fields[key] = value_repr(value)
         return fields
