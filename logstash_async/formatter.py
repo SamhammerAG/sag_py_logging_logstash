@@ -38,6 +38,8 @@ class LogstashFormatter(logging.Formatter):
         self._tags = tags if tags is not None else []
         self._extra_prefix = extra_prefix
         self._extra = extra
+        self._format_extra_fields()
+
         self._ensure_ascii = ensure_ascii
         self._metadata = metadata
 
@@ -98,8 +100,6 @@ class LogstashFormatter(logging.Formatter):
         # record fields
         dynamic_extra_fields = self._get_record_fields(record)
         message.update(dynamic_extra_fields)
-        # prepare static extra fields
-        self._format_extra_fields()
         if self._extra:
             message.update(self._extra)
 
