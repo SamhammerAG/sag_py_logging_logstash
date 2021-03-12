@@ -95,7 +95,7 @@ class LogstashFormatter(logging.Formatter):
             message['tags'] = self._tags
 
         if record.exc_info:
-            message.update({'stack_trace', self._format_exception(record.exc_info)})
+            message.update({'stack_trace': self._format_exception(record.exc_info)})
 
         # record fields
         dynamic_extra_fields = self._get_record_fields(record)
