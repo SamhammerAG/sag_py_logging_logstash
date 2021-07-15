@@ -18,6 +18,9 @@
 #
 import os
 import sys
+
+import setup
+
 sys.path.insert(0, os.path.abspath('..'))
 
 import logstash_async
@@ -56,7 +59,7 @@ author = u'Enrico Tröger'
 # built documents.
 #
 # The short X.Y version.
-version = logstash_async.__version__
+version = setup.VERSION
 # The full version, including alpha/beta/rc tags.
 release = version
 

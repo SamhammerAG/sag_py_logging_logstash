@@ -9,7 +9,6 @@ from logstash_async.constants import constants
 from logstash_async.formatter import LogstashFormatter
 from logstash_async.utils import safe_log_via_print
 from logstash_async.worker import LogProcessingWorker
-import logstash_async
 from .transport import HttpTransport
 
 
@@ -28,8 +27,6 @@ class AsynchronousLogstashHandler(Handler):
                       the database. (Given in seconds. Default is None, and disables this feature)
     """
 
-    _worker_thread = None
-
     # ----------------------------------------------------------------------
     # pylint: disable=too-many-arguments
     def __init__(self, host, port,
@@ -43,6 +40,7 @@ class AsynchronousLogstashHandler(Handler):
         self._transport = transport
         self._event_ttl = event_ttl
         self._encoding = encoding
+        self._worker_thread = None
         self._setup_transport(**kwargs)
 
     # ----------------------------------------------------------------------
@@ -53,10 +51,9 @@ class AsynchronousLogstashHandler(Handler):
         self._setup_transport()
         self._start_worker_thread()
 
-        # basically same implementation as in logging.handlers.SocketHandler.emit()
         try:
             data = self._format_record(record)
-            AsynchronousLogstashHandler._worker_thread.enqueue_event(data)
+            self._worker_thread.enqueue_event(data)
         except Exception:
             self.handleError(record)
 
@@ -80,23 +77,18 @@ class AsynchronousLogstashHandler(Handler):
         if self._worker_thread_is_running():
             return
 
-        AsynchronousLogstashHandler._worker_thread = LogProcessingWorker(
+        self._worker_thread = LogProcessingWorker(
             host=self._host,
             port=self._port,
             transport=self._transport,
             ssl_enable=self._ssl_enable,
-            cache=logstash_async.EVENT_CACHE,
+            cache={},
             event_ttl=self._event_ttl)
-        AsynchronousLogstashHandler._worker_thread.start()
+        self._worker_thread.start()
 
     # ----------------------------------------------------------------------
-    @staticmethod
-    def _worker_thread_is_running():
-        worker_thread = AsynchronousLogstashHandler._worker_thread
-        if worker_thread is not None and worker_thread.is_alive():
-            return True
-
-        return False
+    def _worker_thread_is_running(self):
+        return self._worker_thread is not None and self._worker_thread.is_alive()
 
     # ----------------------------------------------------------------------
     def _format_record(self, record):
@@ -132,15 +124,15 @@ class AsynchronousLogstashHandler(Handler):
 
     # ----------------------------------------------------------------------
     def _trigger_worker_shutdown(self):
-        AsynchronousLogstashHandler._worker_thread.shutdown()
+        self._worker_thread.shutdown()
 
     # ----------------------------------------------------------------------
     def _wait_for_worker_thread(self):
-        AsynchronousLogstashHandler._worker_thread.join()
+        self._worker_thread.join()
 
     # ----------------------------------------------------------------------
     def _reset_worker_thread(self):
-        AsynchronousLogstashHandler._worker_thread = None
+        self._worker_thread = None
 
     # ----------------------------------------------------------------------
     def _close_transport(self):
