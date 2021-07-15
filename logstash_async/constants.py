@@ -24,15 +24,15 @@ class Constants:
     # maximum number of events to be sent to Logstash in one batch (i.e. using a single connection)
     QUEUED_EVENTS_BATCH_SIZE = 50
     # maximum number of events to be updated within one SQLite statement
-    FORMATTER_RECORD_FIELD_SKIP_LIST = [
+    FORMATTER_RECORD_FIELD_SKIP_LIST = {
         'args', 'asctime', 'created', 'exc_info', 'exc_text', 'filename', 'funcName',
         'id', 'levelname', 'levelno', 'lineno', 'message', 'module',
         'msecs', 'msg', 'name', 'pathname', 'process',
-        'processName', 'relativeCreated', 'stack_info', 'thread', 'threadName']
+        'processName', 'relativeCreated', 'stack_info', 'thread', 'threadName'}
     # fields to be set on the top-level of a Logstash event/message, do not modify this
     # unless you know what you are doing
-    FORMATTER_LOGSTASH_MESSAGE_FIELD_LIST = [
-        'logsource', 'program', 'type', 'tags', '@metadata']
+    FORMATTER_LOGSTASH_MESSAGE_FIELD_LIST = {
+        'logsource', 'program', 'type', 'tags', '@metadata'}
     # enable rate limiting for error messages (e.g. network errors) emitted by the logger
     # used in LogProcessingWorker, i.e. when transmitting log messages to the Logstash server.
     # Use a string like '5 per minute' or None to disable (default), for details see
