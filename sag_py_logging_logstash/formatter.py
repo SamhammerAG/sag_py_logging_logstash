@@ -79,6 +79,7 @@ class LogstashFormatter(logging.Formatter):
             "level": record.levelname,
             "logsource": self._logsource,
             "message": record.getMessage(),
+            "message_template": record.msg,
             "path": record.pathname,
             "process_id": record.process,
             "program": self._program_name,
