@@ -7,7 +7,6 @@ from abc import ABC, abstractmethod
 
 
 class Cache(ABC):
-
     # ----------------------------------------------------------------------
     @abstractmethod
     def add_event(self, event):

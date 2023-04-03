@@ -1,5 +1,0 @@
-include LICENSE
-include README.rst
-include docs/Makefile
-recursive-include docs *.py *.rst *.css *.gif *.png
-recursive-exclude docs/_build *

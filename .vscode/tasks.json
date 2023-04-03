@@ -1,0 +1,35 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Pytest coverage report",
+            "type": "shell",
+            "command": "pytest --cov=sag_py_logging_logstash --cov-report=xml --cov-report=html tests && coverage-lcov",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Flake8",
+            "type": "shell",
+            "command": "flake8 . --count --per-file-ignores='__init__.py:F401' --max-complexity=10 --max-line-length=120 --statistics",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Build package",
+            "type": "shell",
+            "command": "pip install build && python -m build --sdist --wheel --outdir dist .",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        }
+    ]
+}

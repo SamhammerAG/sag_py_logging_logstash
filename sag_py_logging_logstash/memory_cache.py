@@ -3,12 +3,12 @@
 # This software may be modified and distributed under the terms
 # of the MIT license.  See the LICENSE file for details.
 
+import uuid
 from datetime import datetime, timedelta
 from logging import getLogger as get_logger
-import uuid
 
-from logstash_async.cache import Cache
-from logstash_async.constants import constants
+from sag_py_logging_logstash.cache import Cache
+from sag_py_logging_logstash.constants import constants
 
 
 class MemoryCache(Cache):
@@ -34,7 +34,7 @@ class MemoryCache(Cache):
             "event_text": event,
             "pending_delete": False,
             "entry_date": datetime.now(),
-            "id": event_id
+            "id": event_id,
         }
 
     # ----------------------------------------------------------------------
@@ -42,9 +42,9 @@ class MemoryCache(Cache):
         events = []
         event_count = 0
         for event in self._cache.values():
-            if not event['pending_delete']:
+            if not event["pending_delete"]:
                 events.append(event)
-                event['pending_delete'] = True
+                event["pending_delete"] = True
 
                 event_count += 1
                 if event_count >= constants.QUEUED_EVENTS_BATCH_SIZE:
@@ -54,21 +54,21 @@ class MemoryCache(Cache):
     # ----------------------------------------------------------------------
     def requeue_queued_events(self, events):
         for event in events:
-            event_to_queue = self._cache.get(event['id'], None)
+            event_to_queue = self._cache.get(event["id"], None)
             # If they gave us an event which is not in the cache,
             # there is really nothing for us to do. Right now
             # this use-case does not raise an error. Instead, we
             # just log the message.
             if event_to_queue:
-                event_to_queue['pending_delete'] = False
+                event_to_queue["pending_delete"] = False
             else:
                 self.logger.warning(
-                    "Could not requeue event with id {}. "
-                    "It does not appear to be in the cache.".format(event['id']))
+                    "Could not requeue event with id {}. " "It does not appear to be in the cache.".format(event["id"])
+                )
 
     # ----------------------------------------------------------------------
     def delete_queued_events(self):
-        ids_to_delete = [event['id'] for event in self._cache.values() if event['pending_delete']]
+        ids_to_delete = [event["id"] for event in self._cache.values() if event["pending_delete"]]
         self._delete_events(ids_to_delete)
 
     # ----------------------------------------------------------------------
@@ -77,10 +77,7 @@ class MemoryCache(Cache):
             return
 
         delete_time = datetime.now() - timedelta(seconds=self._event_ttl)
-        ids_to_delete = [
-            event['id']
-            for event in self._cache.values()
-            if event['entry_date'] < delete_time]
+        ids_to_delete = [event["id"] for event in self._cache.values() if event["entry_date"] < delete_time]
         self._delete_events(ids_to_delete)
 
     # ----------------------------------------------------------------------
@@ -91,5 +88,5 @@ class MemoryCache(Cache):
             event = self._cache.pop(event_id, None)
             if not event:
                 self.logger.warning(
-                    "Could not delete event with id {}. "
-                    "It does not appear to be in the cache.".format(event_id))
+                    "Could not delete event with id {}. " "It does not appear to be in the cache.".format(event_id)
+                )

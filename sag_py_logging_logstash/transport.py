@@ -3,13 +3,13 @@
 # This software may be modified and distributed under the terms
 # of the MIT license.  See the LICENSE file for details.
 
-from abc import ABC, abstractmethod
-from typing import Iterator, Union
 import json
 import logging
+from abc import ABC, abstractmethod
+from typing import Iterator, Union
 
-from requests.auth import HTTPBasicAuth
 import requests
+from requests.auth import HTTPBasicAuth
 
 logger = logging.getLogger(__name__)
 
@@ -35,12 +35,12 @@ class Transport(ABC):
     """
 
     def __init__(
-            self,
-            host: str,
-            port: int,
-            timeout: Union[None, float],
-            ssl_enable: bool,
-            use_logging: bool,
+        self,
+        host: str,
+        port: int,
+        timeout: Union[None, float],
+        ssl_enable: bool,
+        use_logging: bool,
     ):
         self._host = host
         self._port = port
@@ -87,19 +87,19 @@ class HttpTransport(Transport):
     """
 
     def __init__(
-            self,
-            host: str,
-            port: int,
-            timeout: Union[None, float] = TimeoutNotSet,
-            ssl_enable: bool = True,
-            use_logging: bool = False,
-            **kwargs
+        self,
+        host: str,
+        port: int,
+        timeout: Union[None, float] = TimeoutNotSet,
+        ssl_enable: bool = True,
+        use_logging: bool = False,
+        **kwargs,
     ):
         super().__init__(host, port, timeout, ssl_enable, use_logging)
-        self._username = kwargs.get('username', None)
-        self._password = kwargs.get('password', None)
-        self._index_name = kwargs.get('index_name', None)
-        self._max_content_length = kwargs.get('max_content_length', 100 * 1024 * 1024)
+        self._username = kwargs.get("username", None)
+        self._password = kwargs.get("password", None)
+        self._index_name = kwargs.get("index_name", None)
+        self._max_content_length = kwargs.get("max_content_length", 100 * 1024 * 1024)
         self.__session = None
 
     @property
@@ -110,13 +110,13 @@ class HttpTransport(Transport):
         :return: The URL of the logstash HTTP pipeline.
         :rtype: str
         """
-        protocol = 'http'
+        protocol = "http"
         if self._ssl_enable:
-            protocol = 'https'
+            protocol = "https"
 
         if self._index_name is not None:
-            return f'{protocol}://{self._host}:{self._port}/{self._index_name}'
-        return f'{protocol}://{self._host}:{self._port}'
+            return f"{protocol}://{self._host}:{self._port}/{self._index_name}"
+        return f"{protocol}://{self._host}:{self._port}"
 
     def __batches(self, events: list) -> Iterator[list]:
         """Generate dynamic sized batches based on the max content length.
@@ -139,13 +139,13 @@ class HttpTransport(Transport):
             if current_event is None:
                 return
             if len(current_event) > self._max_content_length:
-                msg = 'The event size <%s> is greater than the max content length <%s>.'
-                msg += 'Skipping event.'
+                msg = "The event size <%s> is greater than the max content length <%s>."
+                msg += "Skipping event."
                 if self._use_logging:
                     logger.warning(msg, len(current_event), self._max_content_length)
                 continue
             obj = json.loads(current_event)
-            content_length = len(json.dumps(current_batch + [obj]).encode('utf8'))
+            content_length = len(json.dumps(current_batch + [obj]).encode("utf8"))
             if content_length > self._max_content_length:
                 batch = current_batch
                 current_batch = [obj]
@@ -165,8 +165,7 @@ class HttpTransport(Transport):
         return HTTPBasicAuth(self._username, self._password)
 
     def close(self) -> None:
-        """Close the HTTP session.
-        """
+        """Close the HTTP session."""
         if self.__session is not None:
             self.__session.close()
 
@@ -187,14 +186,14 @@ class HttpTransport(Transport):
         self.__session = requests.Session()
         for batch in self.__batches(events):
             if self._use_logging:
-                logger.debug('Batch length: %s, Batch size: %s',
-                             len(batch), len(json.dumps(batch).encode('utf8')))
+                logger.debug("Batch length: %s, Batch size: %s", len(batch), len(json.dumps(batch).encode("utf8")))
             response = self.__session.post(
                 self.url,
-                headers={'Content-Type': 'application/json'},
+                headers={"Content-Type": "application/json"},
                 json=batch,
                 timeout=self._timeout,
-                auth=self.__auth())
+                auth=self.__auth(),
+            )
             if response.status_code != 200:
                 self.close()
                 response.raise_for_status()

@@ -11,6 +11,7 @@ class Constants:
 
     The class should not instantiated directly but used via the module level `constant` variable.
     """
+
     # timeout in seconds for TCP connections
     SOCKET_TIMEOUT = 5.0
     # interval in seconds to check the internal queue for new messages to be cached in the database
@@ -25,14 +26,33 @@ class Constants:
     QUEUED_EVENTS_BATCH_SIZE = 50
     # maximum number of events to be updated within one SQLite statement
     FORMATTER_RECORD_FIELD_SKIP_LIST = {
-        'args', 'asctime', 'created', 'exc_info', 'exc_text', 'filename', 'funcName',
-        'id', 'levelname', 'levelno', 'lineno', 'message', 'module',
-        'msecs', 'msg', 'name', 'pathname', 'process',
-        'processName', 'relativeCreated', 'stack_info', 'thread', 'threadName'}
+        "args",
+        "asctime",
+        "created",
+        "exc_info",
+        "exc_text",
+        "filename",
+        "funcName",
+        "id",
+        "levelname",
+        "levelno",
+        "lineno",
+        "message",
+        "module",
+        "msecs",
+        "msg",
+        "name",
+        "pathname",
+        "process",
+        "processName",
+        "relativeCreated",
+        "stack_info",
+        "thread",
+        "threadName",
+    }
     # fields to be set on the top-level of a Logstash event/message, do not modify this
     # unless you know what you are doing
-    FORMATTER_LOGSTASH_MESSAGE_FIELD_LIST = {
-        'logsource', 'program', 'type', 'tags', '@metadata'}
+    FORMATTER_LOGSTASH_MESSAGE_FIELD_LIST = {"logsource", "program", "type", "tags", "@metadata"}
     # enable rate limiting for error messages (e.g. network errors) emitted by the logger
     # used in LogProcessingWorker, i.e. when transmitting log messages to the Logstash server.
     # Use a string like '5 per minute' or None to disable (default), for details see

@@ -13,9 +13,9 @@ from limits import parse as parse_rate_limit
 from limits.storage import MemoryStorage
 from limits.strategies import FixedWindowRateLimiter
 
-from logstash_async.constants import constants
-from logstash_async.memory_cache import MemoryCache
-from logstash_async.utils import safe_log_via_print
+from sag_py_logging_logstash.constants import constants
+from sag_py_logging_logstash.memory_cache import MemoryCache
+from sag_py_logging_logstash.utils import safe_log_via_print
 
 
 class ProcessingError(Exception):
@@ -27,12 +27,12 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
 
     # ----------------------------------------------------------------------
     def __init__(self, *args, **kwargs):
-        self._host = kwargs.pop('host')
-        self._port = kwargs.pop('port')
-        self._transport = kwargs.pop('transport')
-        self._ssl_enable = kwargs.pop('ssl_enable')
-        self._memory_cache = kwargs.pop('cache')
-        self._event_ttl = kwargs.pop('event_ttl')
+        self._host = kwargs.pop("host")
+        self._port = kwargs.pop("port")
+        self._transport = kwargs.pop("transport")
+        self._ssl_enable = kwargs.pop("ssl_enable")
+        self._memory_cache = kwargs.pop("cache")
+        self._event_ttl = kwargs.pop("event_ttl")
 
         super().__init__(*args, **kwargs)
         self.daemon = True
@@ -147,11 +147,8 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
     # ----------------------------------------------------------------------
     def _log_processing_error(self, exception):
         self._safe_log(
-            u'exception',
-            u'Log processing error (queue size: %3s): %s',
-            self._queue.qsize(),
-            exception,
-            exc=exception)
+            "exception", "Log processing error (queue size: %3s): %s", self._queue.qsize(), exception, exc=exception
+        )
 
     # ----------------------------------------------------------------------
     def _delay_processing(self):
@@ -177,8 +174,7 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
     # ----------------------------------------------------------------------
     def _flush_queued_events(self, force=False):
         # check if necessary and abort if not
-        if not force and not self._queued_event_interval_reached() and \
-                not self._queued_event_count_reached():
+        if not force and not self._queued_event_interval_reached() and not self._queued_event_count_reached():
             return
 
         self._clear_flush_event()
@@ -189,22 +185,15 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
                 break
 
             try:
-                events = [event['event_text'] for event in queued_events]
+                events = [event["event_text"] for event in queued_events]
                 self._send_events(events)
             # exception types for which we do not want a stack trace
             except (ConnectionError, TimeoutError, socket_gaierror) as exc:
-                self._safe_log(
-                    u'error',
-                    u'An error occurred while sending events: %s',
-                    exc)
+                self._safe_log("error", "An error occurred while sending events: %s", exc)
                 self._memory_cache.requeue_queued_events(queued_events)
                 break
             except Exception as exc:
-                self._safe_log(
-                    u'exception',
-                    u'An error occurred while sending events: %s',
-                    exc,
-                    exc=exc)
+                self._safe_log("exception", "An error occurred while sending events: %s", exc, exc=exc)
                 self._memory_cache.requeue_queued_events(queued_events)
                 break
             else:
@@ -218,7 +207,7 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
 
         except Exception as exc:
             # just log the exception and hope we can recover from the error
-            self._safe_log(u'exception', u'Error retrieving queued events: %s', exc, exc=exc)
+            self._safe_log("exception", "Error retrieving queued events: %s", exc, exc=exc)
             return None
 
     # ----------------------------------------------------------------------
@@ -241,7 +230,7 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
 
     # ----------------------------------------------------------------------
     def _log_general_error(self, exc):
-        self._safe_log(u'exception', u'An unexpected error occurred: %s', exc, exc=exc)
+        self._safe_log("exception", "An unexpected error occurred: %s", exc, exc=exc)
 
     # ----------------------------------------------------------------------
     def _safe_log(self, log_level, message, *args, **kwargs):
@@ -254,15 +243,13 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
                 return  # skip further logging due to rate limiting
             if rate_limit_allowed == 1:
                 # extend the message to indicate future rate limiting
-                message = \
-                    u'{} (rate limiting effective, ' \
-                    'further equal messages will be limited)'.format(message)
+                message = "{} (rate limiting effective, " "further equal messages will be limited)".format(message)
 
             self._safe_log_impl(log_level, message, *args, **kwargs)
 
     # ----------------------------------------------------------------------
     def _rate_limit_check(self, kwargs):
-        exc = kwargs.pop('exc', None)
+        exc = kwargs.pop("exc", None)
         if self._rate_limit_strategy is not None and exc is not None:
             key = self._factor_rate_limit_key(exc)
             # query curent counter for the caller
@@ -275,13 +262,13 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
 
     # ----------------------------------------------------------------------
     def _factor_rate_limit_key(self, exc):  # pylint: disable=no-self-use
-        module_name = getattr(exc, '__module__', '__no_module__')
+        module_name = getattr(exc, "__module__", "__no_module__")
         class_name = exc.__class__.__name__
         key_items = [module_name, class_name]
-        if hasattr(exc, 'errno') and isinstance(exc.errno, int):
+        if hasattr(exc, "errno") and isinstance(exc.errno, int):
             # in case of socket.error, include the errno as rate limiting key
             key_items.append(str(exc.errno))
-        return '.'.join(key_items)
+        return ".".join(key_items)
 
     # ----------------------------------------------------------------------
     def _safe_log_impl(self, log_level, message, *args, **kwargs):
@@ -293,7 +280,8 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
         queue_size = self._queue.qsize()
         if queue_size:
             self._safe_log(
-                'warn',
-                u'Non-empty queue while shutting down ({} events pending). '
-                u'This indicates a previous error.'.format(queue_size),
-                extra=dict(queue_size=queue_size))
+                "warn",
+                "Non-empty queue while shutting down ({} events pending). "
+                "This indicates a previous error.".format(queue_size),
+                extra=dict(queue_size=queue_size),
+            )

@@ -1,0 +1,43 @@
+{
+    "git.mergeEditor": true,
+    "editor.rulers": [
+        120
+    ],
+    "files.exclude": {
+        ".pytest_cache": true,
+        "*.egg-info": true,
+        "**/__pycache__": true
+    },
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": [
+        "--max-line-length=120",
+        "--max-complexity=10",
+        "--per-file-ignores='__init__.py:F401'"
+    ],
+    "flake8.severity": {
+        "E": "Warning",
+        "F": "Warning"
+    },
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": [
+        "--line-length=120"
+    ],
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    },
+    //"python.analysis.typeCheckingMode": "strict",
+    //"python.linting.mypyEnabled": true,
+    //"python.analysis.inlayHints.functionReturnTypes": true,
+    //"python.analysis.inlayHints.variableTypes": true,
+    //"python.analysis.inlayHints.pytestParameters": true,
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportPrivateUsage": "none"
+    }
+}

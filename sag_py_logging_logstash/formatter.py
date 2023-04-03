@@ -3,15 +3,15 @@
 # This software may be modified and distributed under the terms
 # of the MIT license.  See the LICENSE file for details.
 
-from datetime import date, datetime
 import logging
 import socket
 import sys
 import time
 import traceback
 import uuid
+from datetime import date, datetime
 
-from logstash_async.constants import constants
+from sag_py_logging_logstash.constants import constants
 
 try:
     import json
@@ -20,18 +20,17 @@ except ImportError:
 
 
 class LogstashFormatter(logging.Formatter):
-
     # ----------------------------------------------------------------------
     # pylint: disable=too-many-arguments
     def __init__(
-            self,
-            message_type='python-logstash',
-            tags=None,
-            fqdn=False,
-            extra_prefix='',
-            extra=None,
-            ensure_ascii=True,
-            metadata=None,
+        self,
+        message_type="python-logstash",
+        tags=None,
+        fqdn=False,
+        extra_prefix="",
+        extra=None,
+        ensure_ascii=True,
+        metadata=None,
     ):
         super().__init__()
         self._message_type = message_type
@@ -74,28 +73,28 @@ class LogstashFormatter(logging.Formatter):
     # ----------------------------------------------------------------------
     def format(self, record):
         message = {
-            '@timestamp': self._format_timestamp(record.created),
-            '@version': '1',
-            'host': self._host,
-            'level': record.levelname,
-            'logsource': self._logsource,
-            'message': record.getMessage(),
-            'path': record.pathname,
-            'process_id': record.process,
-            'program': self._program_name,
-            'type': self._message_type,
-            'func_name': record.funcName,
-            'line': record.lineno,
-            'logger_name': record.name,
-            'thread_name': record.threadName,
+            "@timestamp": self._format_timestamp(record.created),
+            "@version": "1",
+            "host": self._host,
+            "level": record.levelname,
+            "logsource": self._logsource,
+            "message": record.getMessage(),
+            "path": record.pathname,
+            "process_id": record.process,
+            "program": self._program_name,
+            "type": self._message_type,
+            "func_name": record.funcName,
+            "line": record.lineno,
+            "logger_name": record.name,
+            "thread_name": record.threadName,
         }
         if self._metadata:
-            message['@metadata'] = self._metadata
+            message["@metadata"] = self._metadata
         if self._tags:
-            message['tags'] = self._tags
+            message["tags"] = self._tags
 
         if record.exc_info:
-            message.update({'stack_trace': self._format_exception(record.exc_info)})
+            message.update({"stack_trace": self._format_exception(record.exc_info)})
 
         # record fields
         dynamic_extra_fields = self._get_record_fields(record)
@@ -112,7 +111,6 @@ class LogstashFormatter(logging.Formatter):
 
     # ----------------------------------------------------------------------
     def _get_record_fields(self, record):
-
         def value_repr(value):
             easy_types = (type(None), bool, str, int, float)
 
@@ -125,7 +123,6 @@ class LogstashFormatter(logging.Formatter):
             elif isinstance(value, uuid.UUID):
                 return value.hex
             elif isinstance(value, easy_types):
-
                 return value
             else:
                 return repr(value)
@@ -134,8 +131,7 @@ class LogstashFormatter(logging.Formatter):
 
         for key, value in record.__dict__.items():
             if key not in constants.FORMATTER_RECORD_FIELD_SKIP_LIST:
-                if self._extra_prefix \
-                        and key not in constants.FORMATTER_LOGSTASH_MESSAGE_FIELD_LIST:
+                if self._extra_prefix and key not in constants.FORMATTER_LOGSTASH_MESSAGE_FIELD_LIST:
                     key = self._extra_prefix + "." + key
                 fields[key] = value_repr(value)
         return fields
@@ -153,11 +149,11 @@ class LogstashFormatter(logging.Formatter):
     # ----------------------------------------------------------------------
     def _format_exception(self, exc_info):
         if isinstance(exc_info, tuple):
-            stack_trace = ''.join(traceback.format_exception(*exc_info))
+            stack_trace = "".join(traceback.format_exception(*exc_info))
         elif exc_info:
-            stack_trace = ''.join(traceback.format_stack())
+            stack_trace = "".join(traceback.format_stack())
         else:
-            stack_trace = ''
+            stack_trace = ""
         return stack_trace
 
     # ----------------------------------------------------------------------

@@ -3,12 +3,12 @@
 # This software may be modified and distributed under the terms
 # of the MIT license.  See the LICENSE file for details.
 
-from logging import FileHandler, makeLogRecord
 import os
 import sys
 import unittest
+from logging import FileHandler, makeLogRecord
 
-from logstash_async.formatter import LogstashFormatter
+from sag_py_logging_logstash.formatter import LogstashFormatter
 
 
 class ExceptionCatchingFileHandler(FileHandler):
@@ -24,7 +24,7 @@ class LogstashFormatterTest(unittest.TestCase):
     def test_format(self):
         file_handler = ExceptionCatchingFileHandler(os.devnull)
         file_handler.setFormatter(LogstashFormatter())
-        file_handler.emit(makeLogRecord({"msg": u"тест"}))
+        file_handler.emit(makeLogRecord({"msg": "тест"}))
         file_handler.close()
 
         self.assertIsNone(file_handler.exception)

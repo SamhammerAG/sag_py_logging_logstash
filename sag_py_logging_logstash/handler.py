@@ -5,10 +5,11 @@
 
 from logging import Handler
 
-from logstash_async.constants import constants
-from logstash_async.formatter import LogstashFormatter
-from logstash_async.utils import safe_log_via_print
-from logstash_async.worker import LogProcessingWorker
+from sag_py_logging_logstash.constants import constants
+from sag_py_logging_logstash.formatter import LogstashFormatter
+from sag_py_logging_logstash.utils import safe_log_via_print
+from sag_py_logging_logstash.worker import LogProcessingWorker
+
 from .transport import HttpTransport
 
 
@@ -29,9 +30,9 @@ class AsynchronousLogstashHandler(Handler):
 
     # ----------------------------------------------------------------------
     # pylint: disable=too-many-arguments
-    def __init__(self, host, port,
-                 ssl_enable=True,
-                 enable=True, event_ttl=None, transport=None, encoding='utf-8', **kwargs):
+    def __init__(
+        self, host, port, ssl_enable=True, enable=True, event_ttl=None, transport=None, encoding="utf-8", **kwargs
+    ):
         super().__init__()
         self._host = host
         self._port = port
@@ -66,11 +67,9 @@ class AsynchronousLogstashHandler(Handler):
     def _setup_transport(self, **kwargs):
         if self._transport is not None:
             return
-        self._transport = HttpTransport(host=self._host,
-            port=self._port,
-            timeout=constants.SOCKET_TIMEOUT,
-            ssl_enable=self._ssl_enable,
-            **kwargs)
+        self._transport = HttpTransport(
+            host=self._host, port=self._port, timeout=constants.SOCKET_TIMEOUT, ssl_enable=self._ssl_enable, **kwargs
+        )
 
     # ----------------------------------------------------------------------
     def _start_worker_thread(self):
@@ -83,7 +82,8 @@ class AsynchronousLogstashHandler(Handler):
             transport=self._transport,
             ssl_enable=self._ssl_enable,
             cache={},
-            event_ttl=self._event_ttl)
+            event_ttl=self._event_ttl,
+        )
         self._worker_thread.start()
 
     # ----------------------------------------------------------------------
@@ -96,7 +96,7 @@ class AsynchronousLogstashHandler(Handler):
         formatted = self.formatter.format(record)
         if isinstance(formatted, str):
             formatted = formatted.encode(self._encoding)  # pylint: disable=redefined-variable-type
-        return formatted + b'\n'
+        return formatted + b"\n"
 
     # ----------------------------------------------------------------------
     def _create_formatter_if_necessary(self):
@@ -140,4 +140,4 @@ class AsynchronousLogstashHandler(Handler):
             if self._transport is not None:
                 self._transport.close()
         except Exception as exc:
-            safe_log_via_print('error', u'Error on closing transport: {}'.format(exc))
+            safe_log_via_print("error", "Error on closing transport: {}".format(exc))

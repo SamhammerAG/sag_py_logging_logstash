@@ -1,10 +1,14 @@
-=====================
-python-logstash-async
-=====================
+# sag_py_logging_logstash
 
-.. image:: https://travis-ci.com/SamhammerAG/python-logstash-async.svg?branch=master
-    :target: https://travis-ci.com/SamhammerAG/python-logstash-async
-    :alt: Travis CI
+[![Maintainability][codeclimate-image]][codeclimate-url]
+[![Coverage Status][coveralls-image]][coveralls-url]
+[![Known Vulnerabilities](https://snyk.io/test/github/SamhammerAG/sag_py_logging_logstash/badge.svg)](https://snyk.io/test/github/SamhammerAG/sag_py_logging_logstash)
+
+[coveralls-image]:https://coveralls.io/repos/github/SamhammerAG/sag_py_logging_logstash/badge.svg?branch=master
+[coveralls-url]:https://coveralls.io/github/SamhammerAG/sag_py_logging_logstash?branch=master
+[codeclimate-image]:https://api.codeclimate.com/v1/badges/5e8f1c5bef6aeecd543d/maintainability
+[codeclimate-url]:https://codeclimate.com/github/SamhammerAG/sag_py_logging_logstash/maintainability
+
 
 Python Logstash Async is an asynchronous Python logging handler to submit
 log events to a remote Logstash instance.
@@ -51,21 +55,10 @@ Example::
 Local Installation
 ------------------
 
-To install from master branch just use the following command::
+pip install sag_py_logging_logstash
 
-    pip install git+https://github.com/SamhammerAG/python-logstash-async.git
-Existing preprocessors
-
-
-You can download python-logstash-async and install it
-directly from source::
-
-    python setup.py install
-
-
-	
-Get the Source
+How to publish
 --------------
-
-The source code is available at https://github.com/SamhammerAG/python-logstash-async.
-
+* Update the version in setup.py and commit your change
+* Create a tag with the same version number
+* Let github do the rest

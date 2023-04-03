@@ -1,58 +1,38 @@
-# -*- coding: utf-8 -*-
-#
-# This software may be modified and distributed under the terms
-# of the MIT license.  See the LICENSE file for details.
+import setuptools
 
-from os import path
-from setuptools import setup
-from shutil import rmtree
-import sys
+with open("README.md", "r") as fh:
+    LONG_DESCRIPTION = fh.read()
 
-NAME = 'python-logstash-async'
-VERSION = '2.3.3'
+with open("requirements.txt", "r") as fin:
+    REQS = fin.read().splitlines()
 
-here = path.abspath(path.dirname(__file__))
-with open(path.join(here, 'README.rst'), 'rb') as f:
-    LONG_DESCRIPTION = f.read().decode('utf-8')
-
-
-if 'bdist_wheel' in sys.argv:
-    # Remove previous build dir when creating a wheel build, since if files have been removed
-    # from the project, they'll still be cached in the build dir and end up as part of the
-    # build, which is really neat!
-    for directory in ('build', 'dist', 'python_logstash_async.egg-info'):
-        rmtree(directory, ignore_errors=True)
-
-
-setup(
-    name=NAME,
-    packages=['logstash_async'],
-    version=VERSION,
-    description='Asynchronous Python logging handler for Logstash.',
+setuptools.setup(
+    name="sag-py-logging-logstash",
+    version="0.1.0",
+    description="Python logging logstash handler",
     long_description=LONG_DESCRIPTION,
-    long_description_content_type='text/x-rst',
-    license='MIT',
-    author='Enrico Tröger',
-    author_email='enrico.troeger@uvena.de',
-    url='https://github.com/eht16/python-logstash-async',
-    project_urls={
-        'Travis CI': 'https://travis-ci.org/eht16/python-logstash-async/',
-        'Source code': 'https://github.com/eht16/python-logstash-async/',
-        'Documentation': 'https://python-logstash-async.readthedocs.io/en/stable/',
-    },
-    keywords='logging logstash asynchronous',
-    install_requires=['limits', 'requests'],
-    python_requires='>3.5',
-    include_package_data=True,
+    long_description_content_type="text/markdown",
+    url="https://github.com/SamhammerAG/sag_py_logging_logstash",
+    author="Samhammer AG",
+    author_email="support@samhammer.de",
+    license="MIT",
     classifiers=[
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
-        'Topic :: Internet :: WWW/HTTP',
-        'Topic :: Software Development :: Libraries :: Python Modules',
-        'Topic :: System :: Logging',
-    ]
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: Software Development :: Libraries",
+        "Topic :: Software Development",
+        "Topic :: System :: Logging",
+    ],
+    keywords="logging, logstash",
+    packages=setuptools.find_packages(exclude=["tests"]),
+    python_requires=">=3.8",
+    install_requires=REQS,
+    extras_require={"dev": ["pytest"]},
+    project_urls={
+        "Documentation": "https://github.com/SamhammerAG/sag_py_logging_logstash",
+        "Bug Reports": "https://github.com/SamhammerAG/sag_py_logging_logstash/issues",
+        "Source": "https://github.com/SamhammerAG/sag_py_logging_logstash",
+    },
 )

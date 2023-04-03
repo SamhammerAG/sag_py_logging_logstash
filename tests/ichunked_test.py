@@ -3,11 +3,10 @@
 # This software may be modified and distributed under the terms
 # of the MIT license.  See the LICENSE file for details.
 
-from random import randint
 import unittest
+from random import randint
 
-from logstash_async.utils import ichunked
-
+from sag_py_logging_logstash.utils import ichunked
 
 CHUNK_SIZE_SMALL = 1
 CHUNK_SIZE_NORMAL = 100
@@ -16,7 +15,6 @@ CHUNK_ITERATIONS = 5
 
 
 class IChunkedTest(unittest.TestCase):
-
     # ----------------------------------------------------------------------
     def _test_chunking(self, chunk_size, chunk_iterations):
         # test data
@@ -83,5 +81,5 @@ class IChunkedTest(unittest.TestCase):
         self.assertEqual(iterations, expected_iterations)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
