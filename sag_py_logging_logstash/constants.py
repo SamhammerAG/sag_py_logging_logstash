@@ -38,6 +38,7 @@ class Constants:
         "levelno",
         "lineno",
         "message",
+        "color_message",
         "module",
         "msecs",
         "msg",

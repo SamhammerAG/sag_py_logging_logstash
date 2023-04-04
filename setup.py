@@ -8,7 +8,7 @@ with open("requirements.txt", "r") as fin:
 
 setuptools.setup(
     name="sag-py-logging-logstash",
-    version="2.3.4",
+    version="2.3.5",
     description="Python logging logstash handler",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
