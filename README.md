@@ -55,7 +55,7 @@ Example::
 Local Installation
 ------------------
 
-pip install sag_py_logging_logstash
+pip install sag-py-logging-logstash
 
 How to publish
 --------------
