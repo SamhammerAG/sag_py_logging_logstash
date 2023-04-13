@@ -34,7 +34,7 @@ class MemoryCache(Cache):
             "event_text": event,
             "pending_delete": False,
             "entry_date": datetime.now(),
-            "id": event_id,
+            "id": event_id
         }
 
     # ----------------------------------------------------------------------
@@ -63,7 +63,7 @@ class MemoryCache(Cache):
                 event_to_queue["pending_delete"] = False
             else:
                 self.logger.warning(
-                    "Could not requeue event with id {}. " "It does not appear to be in the cache.".format(event["id"])
+                    "Could not requeue event with id {}. It does not appear to be in the cache.".format(event["id"])
                 )
 
     # ----------------------------------------------------------------------
@@ -88,5 +88,5 @@ class MemoryCache(Cache):
             event = self._cache.pop(event_id, None)
             if not event:
                 self.logger.warning(
-                    "Could not delete event with id {}. " "It does not appear to be in the cache.".format(event_id)
+                    "Could not delete event with id {}. It does not appear to be in the cache.".format(event_id)
                 )

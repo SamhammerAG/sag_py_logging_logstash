@@ -139,8 +139,7 @@ class HttpTransport(Transport):
             if current_event is None:
                 return
             if len(current_event) > self._max_content_length:
-                msg = "The event size <%s> is greater than the max content length <%s>."
-                msg += "Skipping event."
+                msg = "The event size <%s> is greater than the max content length <%s>. Skipping event."
                 if self._use_logging:
                     logger.warning(msg, len(current_event), self._max_content_length)
                 continue
