@@ -4,6 +4,7 @@
 # of the MIT license.  See the LICENSE file for details.
 
 from logging import Handler
+from typing import Union
 
 from sag_py_logging_logstash.constants import constants
 from sag_py_logging_logstash.formatter import LogstashFormatter
@@ -93,9 +94,9 @@ class AsynchronousLogstashHandler(Handler):
     # ----------------------------------------------------------------------
     def _format_record(self, record):
         self._create_formatter_if_necessary()
-        formatted = self.formatter.format(record)
+        formatted: Union[str, bytes] = self.formatter.format(record)
         if isinstance(formatted, str):
-            formatted = formatted.encode(self._encoding)  # pylint: disable=redefined-variable-type
+            formatted = formatted.encode(self._encoding)
         return formatted + b"\n"
 
     # ----------------------------------------------------------------------

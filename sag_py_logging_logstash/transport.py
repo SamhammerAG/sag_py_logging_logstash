@@ -44,7 +44,7 @@ class Transport(ABC):
     ):
         self._host = host
         self._port = port
-        self._timeout = None if timeout is TimeoutNotSet else timeout
+        self._timeout = None if timeout is TimeoutNotSet else timeout  # type: ignore
         self._ssl_enable = ssl_enable
         self._use_logging = use_logging
         super().__init__()
@@ -90,7 +90,7 @@ class HttpTransport(Transport):
         self,
         host: str,
         port: int,
-        timeout: Union[None, float] = TimeoutNotSet,
+        timeout: Union[None, float] = TimeoutNotSet,  # type: ignore
         ssl_enable: bool = True,
         use_logging: bool = False,
         **kwargs,

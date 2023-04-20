@@ -34,7 +34,7 @@ class MemoryCache(Cache):
             "event_text": event,
             "pending_delete": False,
             "entry_date": datetime.now(),
-            "id": event_id
+            "id": event_id,
         }
 
     # ----------------------------------------------------------------------

@@ -16,7 +16,7 @@ from sag_py_logging_logstash.constants import constants
 try:
     import json
 except ImportError:
-    import simplejson as json
+    import simplejson as json  # type: ignore
 
 
 class LogstashFormatter(logging.Formatter):

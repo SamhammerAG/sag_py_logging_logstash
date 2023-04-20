@@ -6,9 +6,12 @@ with open("README.md", "r") as fh:
 with open("requirements.txt", "r") as fin:
     REQS = fin.read().splitlines()
 
+with open("requirements-dev.txt", "r") as fin:
+    REQS_DEV = [item for item in fin.read().splitlines() if not item.endswith(".txt")]
+
 setuptools.setup(
     name="sag-py-logging-logstash",
-    version="2.3.5",
+    version="2.3.6",
     description="Python logging logstash handler",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
@@ -29,7 +32,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=["tests"]),
     python_requires=">=3.8",
     install_requires=REQS,
-    extras_require={"dev": ["pytest"]},
+    extras_require={"dev": REQS_DEV},
     project_urls={
         "Documentation": "https://github.com/SamhammerAG/sag_py_logging_logstash",
         "Bug Reports": "https://github.com/SamhammerAG/sag_py_logging_logstash/issues",
