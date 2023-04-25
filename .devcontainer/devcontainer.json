@@ -43,7 +43,8 @@
 				"eamodio.gitlens",
 				"tamasfe.even-better-toml",
 				"AykutSarac.jsoncrack-vscode",
-				"yzhang.markdown-all-in-one"
+				"yzhang.markdown-all-in-one",
+				"Gruntfuggly.todo-tree"
 			]
 		}
 	},
