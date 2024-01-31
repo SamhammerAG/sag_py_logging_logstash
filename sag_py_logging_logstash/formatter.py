@@ -31,6 +31,7 @@ class LogstashFormatter(logging.Formatter):
         extra=None,
         ensure_ascii=True,
         metadata=None,
+        max_length=500,
     ):
         super().__init__()
         self._message_type = message_type
@@ -41,6 +42,7 @@ class LogstashFormatter(logging.Formatter):
 
         self._ensure_ascii = ensure_ascii
         self._metadata = metadata
+        self._max_length = max_length
 
         self._host = None
         self._logsource = None
@@ -78,8 +80,8 @@ class LogstashFormatter(logging.Formatter):
             "host": self._host,
             "level": record.levelname,
             "logsource": self._logsource,
-            "message": record.getMessage(),
-            "message_template": record.msg,
+            "message": self._shorten(record.getMessage()),
+            "message_template": self._shorten(record.msg),
             "path": record.pathname,
             "process_id": record.process,
             "program": self._program_name,
@@ -160,3 +162,12 @@ class LogstashFormatter(logging.Formatter):
     # ----------------------------------------------------------------------
     def _serialize(self, message):
         return json.dumps(message, ensure_ascii=self._ensure_ascii)
+
+    # ----------------------------------------------------------------------
+    def _shorten(self, message):
+        notice = "\n[MESSAGE SHORTENED]\n"
+        offset = len(notice) % 2  # needed when 'notice' has an odd number of characters
+        index = (self._max_length // 2) - len(notice) // 2 - offset
+        if len(message) > self._max_length:
+            return message[:index] + notice + message[-index:]
+        return message
