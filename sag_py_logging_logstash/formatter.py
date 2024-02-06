@@ -165,9 +165,9 @@ class LogstashFormatter(logging.Formatter):
 
     # ----------------------------------------------------------------------
     def _shorten(self, message):
-        notice = "\n[MESSAGE SHORTENED]\n"
+        notice = " ...[MESSAGE SHORTENED]... "
         offset = len(notice) % 2  # needed when 'notice' has an odd number of characters
-        index = (self._max_length // 2) - len(notice) // 2 - offset
+        index = self._max_length // 2 - len(notice) // 2 - offset
         if len(message) > self._max_length:
             return message[:index] + notice + message[-index:]
         return message
