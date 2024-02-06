@@ -3,41 +3,54 @@
     "editor.rulers": [
         120
     ],
+    "files.trimTrailingWhitespace": true,
     "files.exclude": {
+        ".coverage": true,
+        ".flake8": true,
+        ".gitattributes": true,
+        ".gitignore": true,
         ".idea": true,
         ".mypy_cache": true,
-        "**/.pytest_cache": true,
+        ".mypy.ini": true,
+        ".pylintrc": true,
         "*.egg-info": true,
         "**/__pycache__": true,
-        ".coverage": true,
+        "**/.pytest_cache": true,
         "coverage.xml": true,
         "htmlcov": true,
-        "venv": true
+        "venv": true,
     },
     "python.testing.pytestArgs": [
         "tests"
     ],
     "python.testing.pytestEnabled": true,
     "python.testing.unittestEnabled": false,
-    "python.linting.enabled": true,
-    "python.linting.flake8Enabled": true,
-    "python.formatting.provider": "black",
-    "python.formatting.blackArgs": [ "--line-length=120" ],
-    "[python]": { "editor.formatOnSave": true },
-    "[json]": { "editor.formatOnSave": true},
-    "editor.codeActionsOnSave": { "source.organizeImports": true },
-    "python.linting.mypyEnabled": true,
-    "mypy.targets": [
-        // Required by dmypy - otherwise mypy has an error in vscode
-        "--follow-imports=normal",
-        "."
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        },
+    },
+    "isort.args": [
+        "--profile",
+        "black",
+        "--line-length",
+        "120"
     ],
     "python.analysis.diagnosticSeverityOverrides": {
         "reportPrivateUsage": "information",
     },
-    "errorLens.enabledDiagnosticLevels": [
-        "error",
-        "warning"
+    "black-formatter.args": [
+        "--line-length=120"
+    ],
+    "[json]": {
+        "editor.formatOnSave": true
+    },
+    "mypy.targets": [
+        // Required by dmypy - otherwise mypy has an error in vscode
+        "--follow-imports=normal",
+        "."
     ],
     "todo-tree.general.showActivityBarBadge": true,
     "todo-tree.general.statusBar": "current file"
