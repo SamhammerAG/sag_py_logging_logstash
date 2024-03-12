@@ -80,3 +80,11 @@ Just install vscode with dev containers extension. All required extensions and c
 * Update the version in setup.py and commit your change
 * Create a tag with the same version number
 * Let github do the rest
+
+## How to test
+
+To avoid publishing to pypi unnecessarily you can do as follows
+
+* Tag your branch however you like
+* Use the chosen tag in the requirements.txt-file of the project you want to test this library in, eg. `sag_py_logging_logstash==<your tag>`
+* Rebuild/redeploy your project
