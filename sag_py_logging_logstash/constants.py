@@ -50,6 +50,7 @@ class Constants:
         "stack_info",
         "thread",
         "threadName",
+        "taskName",
     }
     # fields to be set on the top-level of a Logstash event/message, do not modify this
     # unless you know what you are doing

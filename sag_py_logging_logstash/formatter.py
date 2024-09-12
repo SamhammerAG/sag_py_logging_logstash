@@ -9,7 +9,7 @@ import sys
 import time
 import traceback
 import uuid
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 
 from sag_py_logging_logstash.constants import constants
 
@@ -109,7 +109,7 @@ class LogstashFormatter(logging.Formatter):
 
     # ----------------------------------------------------------------------
     def _format_timestamp(self, time_):
-        tstamp = datetime.utcfromtimestamp(time_)
+        tstamp = datetime.fromtimestamp(time_, tz=timezone.utc)
         return tstamp.strftime("%Y-%m-%dT%H:%M:%S") + ".%03d" % (tstamp.microsecond / 1000) + "Z"
 
     # ----------------------------------------------------------------------
