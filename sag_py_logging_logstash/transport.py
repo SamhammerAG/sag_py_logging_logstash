@@ -6,7 +6,7 @@
 import json
 import logging
 from abc import ABC, abstractmethod
-from typing import Iterator, Union
+from typing import Iterator
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -38,7 +38,7 @@ class Transport(ABC):
         self,
         host: str,
         port: int,
-        timeout: Union[None, float],
+        timeout: float | None,
         ssl_enable: bool,
         use_logging: bool,
     ):
@@ -90,7 +90,7 @@ class HttpTransport(Transport):
         self,
         host: str,
         port: int,
-        timeout: Union[None, float] = TimeoutNotSet,  # type: ignore
+        timeout: float | None = TimeoutNotSet,  # type: ignore
         ssl_enable: bool = True,
         use_logging: bool = False,
         **kwargs,
