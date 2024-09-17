@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Pytest with coverage" type="ShConfigurationType">
-    <option name="SCRIPT_TEXT" value="pytest --cov=sag_py_logging_logstash --cov-report=xml --cov-report=html tests; coverage-lcov" />
+    <option name="SCRIPT_TEXT" value="pytest --cov=sag_py_logging_logstash --cov-report=xml --cov-report=html tests" />
     <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
     <option name="SCRIPT_PATH" value="" />
     <option name="SCRIPT_OPTIONS" value="" />
