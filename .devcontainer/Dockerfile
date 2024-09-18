@@ -1,5 +1,5 @@
 # https://github.com/devcontainers/images/tree/main/src/python
-FROM mcr.microsoft.com/devcontainers/python:3.8-bullseye
+FROM mcr.microsoft.com/devcontainers/python:3.12-bookworm
 
 # Uninstall pre-installed formatting and linting tools
 # They would conflict with our pinned versions

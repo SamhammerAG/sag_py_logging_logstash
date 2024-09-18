@@ -1,26 +1,26 @@
 [tool.poetry]
 name = "sag-py-logging-logstash"
-version = "2.3.9"
+version = "3.0.0"
 description = "asynchronous Python logging handler to submit log events to a remote Logstash instance"
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.8.2"
-limits = "^3.11.0"
-requests = "^2.31.0"
+python = "^3.12"
+limits = "^*"
+requests = "*"
 
 [tool.poetry.group.dev.dependencies]
-limits = "^3.11.0"
-requests = "^2.31.0"
-flake8 = "^7.0.0"
-mypy = "^1.10.0"
-build = "^1.2.1"
-pytest = "^8.2.0"
-pytest-asyncio = "^0.23.6"
-pytest-cov = "^5.0.0"
-coverage-lcov = "0.2.4"
-mock = "^5.1.0"
+limits = "*"
+requests = "*"
+flake8 = "*"
+mypy = "*"
+build = "*"
+pytest = "*"
+pytest-asyncio = "*"
+pytest-cov = "*"
+coverage-lcov = "*"
+mock = "*"
 types-mock = "^5.1.0.20240425"
 toml = "*"
 

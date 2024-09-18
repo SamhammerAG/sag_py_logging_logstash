@@ -30,6 +30,16 @@
                 "reveal": "always",
                 "panel": "new"
             }
-        }
+        },
+		{
+			"label": "Format all",
+			"type": "shell",
+			"command": "black . -l 120",
+			"group": "test",
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			}
+		}
     ]
 }
