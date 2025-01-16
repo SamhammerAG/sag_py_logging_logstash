@@ -7,22 +7,22 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-limits = "^*"
+limits = ">=3.10.1, <4.0.0"
 requests = "*"
 
 [tool.poetry.group.dev.dependencies]
-limits = "*"
-requests = "*"
+build = ">=1.1.1"
+coverage-lcov = "*"
 flake8 = "*"
+mock = "*"
 mypy = "*"
-build = "*"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
-coverage-lcov = "*"
-mock = "*"
-types-mock = "^5.1.0.20240425"
+requests = "*"
+types-mock = ">=5.1.0.20240425"
 toml = "*"
+zipp = ">=3.19.1"
 
 [build-system]
 requires = ["setuptools>=61.0"]

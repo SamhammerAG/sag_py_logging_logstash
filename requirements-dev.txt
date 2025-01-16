@@ -1,14 +1,15 @@
 -r requirements.txt
-flake8
-mypy
-build
+build>=1.1.1
 
+build
+coverage-lcov
+flake8
+mock
+mypy
 pytest
 pytest-asyncio
 pytest-cov
-coverage-lcov
 toml
-mock
 types-mock
 
 zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
