@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sag-py-logging-logstash"
-version = "3.0.0"
+version = "3.0.1"
 description = "asynchronous Python logging handler to submit log events to a remote Logstash instance"
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
