@@ -40,7 +40,7 @@
 			]
 		}
 	},
-	"initializeCommand": "powershell.exe .\\.devcontainer\\initialize.ps1",
+	"initializeCommand": "powershell.exe ./.devcontainer/initialize.ps1",
 	"postCreateCommand": "pip3 install -r ${containerWorkspaceFolder}/requirements-dev.txt",
 	"remoteUser": "vscode",
 	"mounts": [

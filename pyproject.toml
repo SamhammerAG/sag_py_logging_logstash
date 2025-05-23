@@ -7,11 +7,11 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-limits = ">=3.10.1, <4.0.0"
+limits = ">=3.10.1, <6.0.0"
 requests = "*"
 
 [tool.poetry.group.dev.dependencies]
-build = ">=1.1.1"
+build = ">=1.2.2.post1"
 coverage-lcov = "*"
 flake8 = "*"
 mock = "*"
@@ -22,7 +22,7 @@ pytest-cov = "*"
 requests = "*"
 types-mock = ">=5.1.0.20240425"
 toml = "*"
-zipp = ">=3.19.1"
+zipp = ">=3.21.0"
 
 [build-system]
 requires = ["setuptools>=61.0"]
