@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-limits = ">=3.10.1, <6.0.0"
+limits = ">=3.11.0, <6.0.0"
 requests = "*"
 
 [tool.poetry.group.dev.dependencies]
