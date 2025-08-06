@@ -5,7 +5,6 @@
 
 import uuid
 from datetime import datetime, timedelta
-from logging import getLogger as get_logger
 
 from sag_py_logging_logstash.cache import Cache
 from sag_py_logging_logstash.constants import constants
@@ -20,12 +19,11 @@ class MemoryCache(Cache):
     :param event_ttl: Optional parameter used to expire events in the cache after a time
     """
 
-    logger = get_logger(__name__)
-
     # ----------------------------------------------------------------------
-    def __init__(self, cache, event_ttl=None):
+    def __init__(self, safe_logger, cache, event_ttl=None):
         self._cache = cache
         self._event_ttl = event_ttl
+        self._safe_logger = safe_logger
 
     # ----------------------------------------------------------------------
     def add_event(self, event):
@@ -62,8 +60,9 @@ class MemoryCache(Cache):
             if event_to_queue:
                 event_to_queue["pending_delete"] = False
             else:
-                self.logger.warning(
-                    "Could not requeue event with id {}. It does not appear to be in the cache.".format(event["id"])
+                self._safe_logger.log(
+                    "WARNING",
+                    "Could not requeue event with id {}. It does not appear to be in the cache.".format(event["id"]),
                 )
 
     # ----------------------------------------------------------------------
@@ -87,6 +86,7 @@ class MemoryCache(Cache):
             # that we can do. This currently doesn't throw an error.
             event = self._cache.pop(event_id, None)
             if not event:
-                self.logger.warning(
-                    "Could not delete event with id {}. It does not appear to be in the cache.".format(event_id)
+                self._safe_logger.log(
+                    "WARNING",
+                    "Could not delete event with id {}. It does not appear to be in the cache.".format(event_id),
                 )

@@ -101,7 +101,9 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
 
     # ----------------------------------------------------------------------
     def _setup_memory_cache(self):
-        self._memory_cache = MemoryCache(cache=self._memory_cache, event_ttl=self._event_ttl)
+        self._memory_cache = MemoryCache(
+            safe_logger=self._safe_logger, cache=self._memory_cache, event_ttl=self._event_ttl
+        )
 
     # ----------------------------------------------------------------------
     def _fetch_events(self):
