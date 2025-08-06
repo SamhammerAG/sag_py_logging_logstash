@@ -11,6 +11,8 @@ from typing import Iterator
 import requests
 from requests.auth import HTTPBasicAuth
 
+from sag_py_logging_logstash.safe_logger import SafeLogger
+
 logger = logging.getLogger(__name__)
 
 
@@ -36,12 +38,14 @@ class Transport(ABC):
 
     def __init__(
         self,
+        safe_logger: SafeLogger,
         host: str,
         port: int,
         timeout: float | None,
         ssl_enable: bool,
         use_logging: bool,
     ):
+        self._safe_logger = safe_logger
         self._host = host
         self._port = port
         self._timeout = None if timeout is TimeoutNotSet else timeout  # type: ignore
@@ -84,6 +88,7 @@ class HttpTransport(Transport):
 
     def __init__(
         self,
+        safe_logger: SafeLogger,
         host: str,
         port: int,
         timeout: float | None = TimeoutNotSet,  # type: ignore
@@ -91,7 +96,7 @@ class HttpTransport(Transport):
         use_logging: bool = False,
         **kwargs,
     ):
-        super().__init__(host, port, timeout, ssl_enable, use_logging)
+        super().__init__(safe_logger, host, port, timeout, ssl_enable, use_logging)
         self._username = kwargs.get("username", None)
         self._password = kwargs.get("password", None)
         self._index_name = kwargs.get("index_name", None)
@@ -175,7 +180,9 @@ class HttpTransport(Transport):
         with requests.Session() as session:
             for batch in self.__batches(events):
                 if self._use_logging:
-                    logger.debug("Batch length: %s, Batch size: %s", len(batch), len(json.dumps(batch).encode("utf8")))
+                    self._safe_logger.log(
+                        "DEBUG", "Batch length: %s, Batch size: %s", len(batch), len(json.dumps(batch).encode("utf8"))
+                    )
                 response = session.post(
                     self.url,
                     headers={"Content-Type": "application/json"},

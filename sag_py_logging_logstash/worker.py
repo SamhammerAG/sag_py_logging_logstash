@@ -4,20 +4,16 @@
 # of the MIT license.  See the LICENSE file for details.
 
 from datetime import datetime
-from logging import getLogger as get_logger
 from queue import Empty, Queue
 from socket import gaierror as socket_gaierror
 from threading import Event, Thread
 
-from limits import parse as parse_rate_limit
-from limits.storage import MemoryStorage
-from limits.strategies import FixedWindowRateLimiter
 from requests.exceptions import ConnectionError as RequestsConnectionError
 from requests.exceptions import ConnectTimeout, HTTPError, ProxyError, RetryError, Timeout
 
 from sag_py_logging_logstash.constants import constants
 from sag_py_logging_logstash.memory_cache import MemoryCache
-from sag_py_logging_logstash.utils import safe_log_via_print
+from sag_py_logging_logstash.safe_logger import SafeLogger
 
 NETWORK_EXCEPTIONS = (
     # Python
@@ -43,6 +39,7 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
 
     # ----------------------------------------------------------------------
     def __init__(self, *args, **kwargs):
+        self._safe_logger: SafeLogger = kwargs.pop("safe_logger")
         self._host = kwargs.pop("host")
         self._port = kwargs.pop("port")
         self._transport = kwargs.pop("transport")
@@ -79,7 +76,6 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
     # ----------------------------------------------------------------------
     def run(self):
         self._reset_flush_counters()
-        self._setup_logger()
         self._setup_memory_cache()
         try:
             self._fetch_events()
@@ -102,16 +98,6 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
     # ----------------------------------------------------------------------
     def _clear_flush_event(self):
         self._flush_event.clear()
-
-    # ----------------------------------------------------------------------
-    def _setup_logger(self):
-        self._logger = get_logger(self.name)
-        # rate limit our own messages to not spam around in case of temporary network errors, etc
-        rate_limit_setting = constants.ERROR_LOG_RATE_LIMIT
-        if rate_limit_setting:
-            self._rate_limit_storage = MemoryStorage()
-            self._rate_limit_strategy = FixedWindowRateLimiter(self._rate_limit_storage)
-            self._rate_limit_item = parse_rate_limit(rate_limit_setting)
 
     # ----------------------------------------------------------------------
     def _setup_memory_cache(self):
@@ -162,7 +148,7 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
 
     # ----------------------------------------------------------------------
     def _log_processing_error(self, exception):
-        self._safe_log(
+        self._safe_logger.log(
             "exception", "Log processing error (queue size: %3s): %s", self._queue.qsize(), exception, exc=exception
         )
 
@@ -205,11 +191,11 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
                 self._send_events(events)
             # exception types for which we do not want a stack trace
             except NETWORK_EXCEPTIONS as exc:
-                self._safe_log("error", "An error occurred while sending events: %s", exc)
+                self._safe_logger.log("error", "An error occurred while sending events: %s", exc)
                 self._memory_cache.requeue_queued_events(queued_events)
                 break
             except Exception as exc:
-                self._safe_log("exception", "An error occurred while sending events: %s", exc, exc=exc)
+                self._safe_logger.log("exception", "An error occurred while sending events: %s", exc, exc=exc)
                 self._memory_cache.requeue_queued_events(queued_events)
                 break
             else:
@@ -223,7 +209,7 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
 
         except Exception as exc:
             # just log the exception and hope we can recover from the error
-            self._safe_log("exception", "Error retrieving queued events: %s", exc, exc=exc)
+            self._safe_logger.log("exception", "Error retrieving queued events: %s", exc, exc=exc)
             return None
 
     # ----------------------------------------------------------------------
@@ -246,56 +232,13 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
 
     # ----------------------------------------------------------------------
     def _log_general_error(self, exc):
-        self._safe_log("exception", "An unexpected error occurred: %s", exc, exc=exc)
-
-    # ----------------------------------------------------------------------
-    def _safe_log(self, log_level, message, *args, **kwargs):
-        # we cannot log via the logging subsystem any longer once it has been set to shutdown
-        if self._shutdown_requested():
-            safe_log_via_print(log_level, message, *args, **kwargs)
-        else:
-            rate_limit_allowed = self._rate_limit_check(kwargs)
-            if rate_limit_allowed <= 0:
-                return  # skip further logging due to rate limiting
-            if rate_limit_allowed == 1:
-                # extend the message to indicate future rate limiting
-                message = "{} (rate limiting effective, " "further equal messages will be limited)".format(message)
-
-            self._safe_log_impl(log_level, message, *args, **kwargs)
-
-    # ----------------------------------------------------------------------
-    def _rate_limit_check(self, kwargs):
-        exc = kwargs.pop("exc", None)
-        if self._rate_limit_strategy is not None and exc is not None:
-            key = self._factor_rate_limit_key(exc)
-            # query curent counter for the caller
-            _, remaining = self._rate_limit_strategy.get_window_stats(self._rate_limit_item, key)
-            # increase the rate limit counter for the key
-            self._rate_limit_strategy.hit(self._rate_limit_item, key)
-            return remaining
-
-        return 2  # any value greater than 1 means allowed
-
-    # ----------------------------------------------------------------------
-    def _factor_rate_limit_key(self, exc):  # pylint: disable=no-self-use
-        module_name = getattr(exc, "__module__", "__no_module__")
-        class_name = exc.__class__.__name__
-        key_items = [module_name, class_name]
-        if hasattr(exc, "errno") and isinstance(exc.errno, int):
-            # in case of socket.error, include the errno as rate limiting key
-            key_items.append(str(exc.errno))
-        return ".".join(key_items)
-
-    # ----------------------------------------------------------------------
-    def _safe_log_impl(self, log_level, message, *args, **kwargs):
-        log_func = getattr(self._logger, log_level)
-        log_func(message, *args, **kwargs)
+        self._safe_logger.log("exception", "An unexpected error occurred: %s", exc, exc=exc)
 
     # ----------------------------------------------------------------------
     def _warn_about_non_empty_queue_on_shutdown(self):
         queue_size = self._queue.qsize()
         if queue_size:
-            self._safe_log(
+            self._safe_logger.log(
                 "warn",
                 "Non-empty queue while shutting down ({} events pending). "
                 "This indicates a previous error.".format(queue_size),
