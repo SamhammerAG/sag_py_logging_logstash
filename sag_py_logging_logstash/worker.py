@@ -241,7 +241,7 @@ class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attribut
         queue_size = self._queue.qsize()
         if queue_size:
             self._safe_logger.log(
-                "warn",
+                "warning",
                 "Non-empty queue while shutting down ({} events pending). "
                 "This indicates a previous error.".format(queue_size),
                 extra=dict(queue_size=queue_size),
