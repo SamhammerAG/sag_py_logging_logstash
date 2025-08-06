@@ -83,6 +83,8 @@ class AsynchronousLogstashHandler(Handler):
         if self._worker_thread_is_running():
             return
 
+        self._safe_logger.log("DEBUG", "Starting worker thread for logstash log processing")
+
         self._worker_thread = LogProcessingWorker(
             safe_logger=self._safe_logger,
             host=self._host,
@@ -93,6 +95,8 @@ class AsynchronousLogstashHandler(Handler):
             event_ttl=self._event_ttl,
         )
         self._worker_thread.start()
+
+        self._safe_logger.log("INFO", "Logstash log processing thread started successfully")
 
     # ----------------------------------------------------------------------
     def _worker_thread_is_running(self):
@@ -123,6 +127,8 @@ class AsynchronousLogstashHandler(Handler):
     # ----------------------------------------------------------------------
     def shutdown(self):
         self._safe_logger.set_shutdown_in_progress()
+
+        self._safe_logger.log("INFO", "Logstash log processing shutting down")
 
         if self._worker_thread_is_running():
             self._trigger_worker_shutdown()
