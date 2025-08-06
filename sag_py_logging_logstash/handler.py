@@ -118,7 +118,6 @@ class AsynchronousLogstashHandler(Handler):
             self._trigger_worker_shutdown()
             self._wait_for_worker_thread()
             self._reset_worker_thread()
-            self._close_transport()
         else:
             pass
 
@@ -133,11 +132,3 @@ class AsynchronousLogstashHandler(Handler):
     # ----------------------------------------------------------------------
     def _reset_worker_thread(self):
         self._worker_thread = None
-
-    # ----------------------------------------------------------------------
-    def _close_transport(self):
-        try:
-            if self._transport is not None:
-                self._transport.close()
-        except Exception as exc:
-            safe_log_via_print("error", f"Error on closing transport: {exc}")

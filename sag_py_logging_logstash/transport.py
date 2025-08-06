@@ -53,10 +53,6 @@ class Transport(ABC):
     def send(self, events: list, **kwargs):
         pass
 
-    @abstractmethod
-    def close(self):
-        pass
-
 
 class HttpTransport(Transport):
     """The :class:`HttpTransport <HttpTransport>` implements a client for the
@@ -100,7 +96,6 @@ class HttpTransport(Transport):
         self._password = kwargs.get("password", None)
         self._index_name = kwargs.get("index_name", None)
         self._max_content_length = kwargs.get("max_content_length", 100 * 1024 * 1024)
-        self.__session = None
 
     @property
     def url(self) -> str:
@@ -163,11 +158,6 @@ class HttpTransport(Transport):
             return None
         return HTTPBasicAuth(self._username, self._password)
 
-    def close(self) -> None:
-        """Close the HTTP session."""
-        if self.__session is not None:
-            self.__session.close()
-
     def send(self, events: list, **kwargs):
         """Send events to the logstash pipeline.
 
@@ -182,18 +172,16 @@ class HttpTransport(Transport):
         :param events: A list of events
         :type events: list
         """
-        self.__session = requests.Session()
-        for batch in self.__batches(events):
-            if self._use_logging:
-                logger.debug("Batch length: %s, Batch size: %s", len(batch), len(json.dumps(batch).encode("utf8")))
-            response = self.__session.post(
-                self.url,
-                headers={"Content-Type": "application/json"},
-                json=batch,
-                timeout=self._timeout,
-                auth=self.__auth(),
-            )
-            if response.status_code != 200:
-                self.close()
-                response.raise_for_status()
-        self.close()
+        with requests.Session() as session:
+            for batch in self.__batches(events):
+                if self._use_logging:
+                    logger.debug("Batch length: %s, Batch size: %s", len(batch), len(json.dumps(batch).encode("utf8")))
+                response = session.post(
+                    self.url,
+                    headers={"Content-Type": "application/json"},
+                    json=batch,
+                    timeout=self._timeout,
+                    auth=self.__auth(),
+                )
+                if response.status_code != 200:
+                    response.raise_for_status()
