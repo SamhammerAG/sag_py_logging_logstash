@@ -27,7 +27,10 @@ class MemoryCacheTest(unittest.TestCase):
     # ----------------------------------------------------------------------
     def test_get_queued_events(self):
         safe_logger = SafeLogger()
-        cache = MemoryCache(safe_logger, {"id1": {"pending_delete": True}, "id2": {"pending_delete": False}})
+        cache = MemoryCache(
+            safe_logger,
+            {"id1": {"pending_delete": True}, "id2": {"pending_delete": False}},
+        )
         self.assertEqual(len(cache.get_queued_events()), 1)
 
     # ----------------------------------------------------------------------
@@ -55,7 +58,10 @@ class MemoryCacheTest(unittest.TestCase):
         constants.QUEUED_EVENTS_BATCH_SIZE = 3
         safe_logger = SafeLogger()
 
-        cache = MemoryCache(safe_logger, {"id1": {"pending_delete": True}, "id2": {"pending_delete": False}})
+        cache = MemoryCache(
+            safe_logger,
+            {"id1": {"pending_delete": True}, "id2": {"pending_delete": False}},
+        )
         events = cache.get_queued_events()
         # expect only 1 event as there are no more available
         self.assertEqual(len(events), 1)
@@ -80,7 +86,11 @@ class MemoryCacheTest(unittest.TestCase):
     def test_delete_queued_events(self):
         safe_logger = SafeLogger()
         cache = MemoryCache(
-            safe_logger, {"id1": {"pending_delete": True, "id": "id1"}, "id2": {"pending_delete": False, "id": "id2"}}
+            safe_logger,
+            {
+                "id1": {"pending_delete": True, "id": "id1"},
+                "id2": {"pending_delete": False, "id": "id2"},
+            },
         )
         cache.delete_queued_events()
         self.assertEqual(len(cache._cache), 1)
@@ -91,8 +101,16 @@ class MemoryCacheTest(unittest.TestCase):
         cache = MemoryCache(
             safe_logger,
             {
-                "id1": {"pending_delete": False, "id": "id1", "entry_date": datetime.datetime.fromtimestamp(0)},
-                "id2": {"pending_delete": False, "id": "id2", "entry_date": datetime.datetime.now()},
+                "id1": {
+                    "pending_delete": False,
+                    "id": "id1",
+                    "entry_date": datetime.datetime.fromtimestamp(0),
+                },
+                "id2": {
+                    "pending_delete": False,
+                    "id": "id2",
+                    "entry_date": datetime.datetime.now(),
+                },
             },
             event_ttl=100,
         )

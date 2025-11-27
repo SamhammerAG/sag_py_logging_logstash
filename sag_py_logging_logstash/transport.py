@@ -181,7 +181,10 @@ class HttpTransport(Transport):
             for batch in self.__batches(events):
                 if self._use_logging:
                     self._safe_logger.log(
-                        "debug", "Batch length: %s, Batch size: %s", len(batch), len(json.dumps(batch).encode("utf8"))
+                        "debug",
+                        "Batch length: %s, Batch size: %s",
+                        len(batch),
+                        len(json.dumps(batch).encode("utf8")),
                     )
                 response = session.post(
                     self.url,

@@ -1,15 +1,14 @@
 {
   "problemMatcher": [
     {
-      "owner": "flake8-error",
+      "owner": "mypy-error",
       "severity": "error",
       "pattern": [
         {
-          "regexp": "^([^:]+):(\\d+):(\\d+):\\s+(E\\d+\\s+.+)$",
+          "regexp": "^([^:]+):([^:]+): error: ([^:]+)$",
           "file": 1,
           "line": 2,
-          "column": 3,
-          "message": 4
+          "message": 3
         }
       ]
     }

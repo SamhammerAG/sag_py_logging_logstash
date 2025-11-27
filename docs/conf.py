@@ -127,7 +127,13 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, "python-logstash-async.tex", "python-logstash-async Documentation", "Enrico Tröger", "manual"),
+    (
+        master_doc,
+        "python-logstash-async.tex",
+        "python-logstash-async Documentation",
+        "Enrico Tröger",
+        "manual",
+    ),
 ]
 
 
@@ -135,7 +141,15 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "python-logstash-async", "python-logstash-async Documentation", [author], 1)]
+man_pages = [
+    (
+        master_doc,
+        "python-logstash-async",
+        "python-logstash-async Documentation",
+        [author],
+        1,
+    )
+]
 
 
 # -- Options for Texinfo output -------------------------------------------

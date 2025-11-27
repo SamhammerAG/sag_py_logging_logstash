@@ -31,9 +31,16 @@ class AsynchronousLogstashHandler(Handler):
     # ----------------------------------------------------------------------
     # pylint: disable=too-many-arguments
     def __init__(
-        self, host, port, ssl_enable=True, enable=True, event_ttl=None, transport=None, encoding="utf-8", **kwargs
+        self,
+        host,
+        port,
+        ssl_enable=True,
+        enable=True,
+        event_ttl=None,
+        transport=None,
+        encoding="utf-8",
+        **kwargs,
     ):
-
         self._safe_logger = SafeLogger()
         super().__init__()
         self._host = host
@@ -75,7 +82,7 @@ class AsynchronousLogstashHandler(Handler):
             port=self._port,
             timeout=constants.SOCKET_TIMEOUT,
             ssl_enable=self._ssl_enable,
-            **kwargs
+            **kwargs,
         )
 
     # ----------------------------------------------------------------------
@@ -135,7 +142,9 @@ class AsynchronousLogstashHandler(Handler):
 
     # ----------------------------------------------------------------------
     def _trigger_worker_shutdown(self):
-        self._safe_logger.print_log("info", "Flushing and shutting down logstash log shipping")
+        self._safe_logger.print_log(
+            "info", "Flushing and shutting down logstash log shipping"
+        )
         self._worker_thread.shutdown()
 
     # ----------------------------------------------------------------------

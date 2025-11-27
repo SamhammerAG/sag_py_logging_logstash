@@ -65,15 +65,8 @@ Just install vscode with dev containers extension. All required extensions and c
 ### With pycharm
 
 * Install latest pycharm
-* Install pycharm plugin BlackConnect
 * Configure the python interpreter/venv
 * pip install requirements-dev.txt
-* pip install black[d]
-* Ctl+Alt+S => Check Tools => BlackConnect => Trigger when saving changed files
-* Ctl+Alt+S => Check Tools => BlackConnect => Trigger on code reformat
-* Ctl+Alt+S => Click Tools => BlackConnect => "Load from pyproject.yaml" (ensure line length is 120)
-* Ctl+Alt+S => Click Tools => BlackConnect => Configure path to the blackd.exe at the "local instance" config (e.g. C:\Python310\Scripts\blackd.exe)
-* Ctl+Alt+S => Click Tools => Actions on save => Reformat code
 * Restart pycharm
 
 ## How to publish

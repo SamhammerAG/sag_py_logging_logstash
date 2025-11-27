@@ -11,7 +11,6 @@ from sag_py_logging_logstash.constants import constants
 
 
 class SafeLogger:
-
     def __init__(
         self,
     ):
@@ -34,7 +33,10 @@ class SafeLogger:
                 return  # skip further logging due to rate limiting
             if rate_limit_allowed == 1:
                 # extend the message to indicate future rate limiting
-                message = "{} (rate limiting effective, " "further equal messages will be limited)".format(message)
+                message = (
+                    "{} (rate limiting effective, "
+                    "further equal messages will be limited)".format(message)
+                )
 
             self._safe_log_impl(log_level, message, *args, **kwargs)
 
@@ -60,7 +62,9 @@ class SafeLogger:
         if self._rate_limit_strategy is not None and exc is not None:
             key = self._factor_rate_limit_key(exc)
             # query curent counter for the caller
-            _, remaining = self._rate_limit_strategy.get_window_stats(self._rate_limit_item, key)
+            _, remaining = self._rate_limit_strategy.get_window_stats(
+                self._rate_limit_item, key
+            )
             # increase the rate limit counter for the key
             self._rate_limit_strategy.hit(self._rate_limit_item, key)
             return remaining
