@@ -10,8 +10,6 @@ from sag_py_logging_logstash.constants import constants
 from sag_py_logging_logstash.memory_cache import MemoryCache
 from sag_py_logging_logstash.safe_logger import SafeLogger
 
-# pylint: disable=protected-access
-
 
 class MemoryCacheTest(unittest.TestCase):
     # ----------------------------------------------------------------------

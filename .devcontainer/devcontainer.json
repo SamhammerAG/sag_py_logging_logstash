@@ -18,9 +18,7 @@
 				"geeebe.duplicate",
 				"Gruntfuggly.todo-tree",
 				"matangover.mypy",
-				"ms-python.pylint",
 				"ms-python.python",
-				"ms-python.vscode-pylance",
 				"ms-toolsai.jupyter",
 				"njpwerner.autodocstring",
 				"njqdev.vscode-python-typehint",
@@ -29,7 +27,8 @@
 				"spmeesseman.vscode-taskexplorer",
 				"tamasfe.even-better-toml",
 				"visualstudioexptteam.vscodeintellicode",
-				"yzhang.markdown-all-in-one"
+				"yzhang.markdown-all-in-one",
+				"kaih2o.python-resource-monitor"
 			]
 		}
 	},

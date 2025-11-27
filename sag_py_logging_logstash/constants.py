@@ -68,4 +68,4 @@ class Constants:
     ERROR_LOG_RATE_LIMIT = None
 
 
-constants = Constants()  # pylint: disable=invalid-name
+constants = Constants()

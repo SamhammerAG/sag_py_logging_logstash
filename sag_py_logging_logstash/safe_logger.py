@@ -71,7 +71,7 @@ class SafeLogger:
 
         return 2  # any value greater than 1 means allowed
 
-    def _factor_rate_limit_key(self, exc):  # pylint: disable=no-self-use
+    def _factor_rate_limit_key(self, exc):
         module_name = getattr(exc, "__module__", "__no_module__")
         class_name = exc.__class__.__name__
         key_items = [module_name, class_name]

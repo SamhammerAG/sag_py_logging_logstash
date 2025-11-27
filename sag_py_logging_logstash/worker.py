@@ -40,7 +40,7 @@ class ProcessingError(Exception):
     """"""
 
 
-class LogProcessingWorker(Thread):  # pylint: disable=too-many-instance-attributes
+class LogProcessingWorker(Thread):
     """"""
 
     # ----------------------------------------------------------------------

@@ -29,7 +29,6 @@ class AsynchronousLogstashHandler(Handler):
     """
 
     # ----------------------------------------------------------------------
-    # pylint: disable=too-many-arguments
     def __init__(
         self,
         host,

@@ -11,7 +11,6 @@
         ".idea": true,
         ".mypy_cache": true,
         ".mypy.ini": true,
-        ".pylintrc": true,
         "*.egg-info": true,
         "**/__pycache__": true,
         "**/.pytest_cache": true,
