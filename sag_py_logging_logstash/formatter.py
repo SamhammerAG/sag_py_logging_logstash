@@ -21,7 +21,6 @@ except ImportError:
 
 class LogstashFormatter(logging.Formatter):
     # ----------------------------------------------------------------------
-    # pylint: disable=too-many-arguments
     def __init__(
         self,
         message_type="python-logstash",
@@ -110,7 +109,11 @@ class LogstashFormatter(logging.Formatter):
     # ----------------------------------------------------------------------
     def _format_timestamp(self, time_):
         tstamp = datetime.fromtimestamp(time_, tz=timezone.utc)
-        return tstamp.strftime("%Y-%m-%dT%H:%M:%S") + ".%03d" % (tstamp.microsecond / 1000) + "Z"
+        return (
+            tstamp.strftime("%Y-%m-%dT%H:%M:%S")
+            + ".%03d" % (tstamp.microsecond / 1000)
+            + "Z"
+        )
 
     # ----------------------------------------------------------------------
     def _get_record_fields(self, record):
@@ -134,7 +137,10 @@ class LogstashFormatter(logging.Formatter):
 
         for key, value in record.__dict__.items():
             if key not in constants.FORMATTER_RECORD_FIELD_SKIP_LIST:
-                if self._extra_prefix and key not in constants.FORMATTER_LOGSTASH_MESSAGE_FIELD_LIST:
+                if (
+                    self._extra_prefix
+                    and key not in constants.FORMATTER_LOGSTASH_MESSAGE_FIELD_LIST
+                ):
                     key = self._extra_prefix + "." + key
                 fields[key] = value_repr(value)
         return fields
@@ -146,7 +152,9 @@ class LogstashFormatter(logging.Formatter):
             if self._extra_prefix:
                 extra_fields_with_prefix = {}
                 for key in self._extra:
-                    extra_fields_with_prefix[self._extra_prefix + "." + key] = self._extra[key]
+                    extra_fields_with_prefix[self._extra_prefix + "." + key] = (
+                        self._extra[key]
+                    )
                 self._extra = extra_fields_with_prefix
 
     # ----------------------------------------------------------------------

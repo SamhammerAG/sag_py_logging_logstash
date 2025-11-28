@@ -2,12 +2,12 @@
 build>=1.2.2.post1
 
 coverage-lcov
-flake8
 mock
 mypy
 pytest
 pytest-asyncio
 pytest-cov
+ruff
 toml
 types-mock
 

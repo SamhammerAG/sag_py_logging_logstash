@@ -12,14 +12,14 @@
             }
         },
         {
-            "label": "Lint",
-            "type": "shell",
-            "command": "flake8 . --count --statistics; mypy .",
-            "group": "test",
-            "presentation": {
-                "reveal": "always",
-                "panel": "new"
-            }
+              "label": "Lint",
+              "type": "shell",
+              "command": "ruff check; mypy .",
+              "group": "test",
+              "presentation": {
+                  "reveal": "always",
+                  "panel": "new"
+              }
         },
         {
             "label": "Build local package",
@@ -32,14 +32,14 @@
             }
         },
 		{
-			"label": "Format all",
-			"type": "shell",
-			"command": "black . -l 120",
-			"group": "test",
-			"presentation": {
-				"reveal": "always",
-				"panel": "new"
-			}
-		}
+              "label": "Format all",
+              "type": "shell",
+              "command": "ruff format",
+              "group": "test",
+              "presentation": {
+                  "reveal": "always",
+                  "panel": "new"
+              }
+        }
     ]
 }

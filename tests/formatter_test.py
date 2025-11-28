@@ -51,8 +51,13 @@ class LogstashFormatterTest(unittest.TestCase):
         # Act
         formatted_message = formatter.format(record)
         # Assert
-        self.assertTrue(len(literal_eval(formatted_message)["message"]) <= formatter._max_length)
-        self.assertTrue(len(literal_eval(formatted_message)["message_template"]) <= formatter._max_length)
+        self.assertTrue(
+            len(literal_eval(formatted_message)["message"]) <= formatter._max_length
+        )
+        self.assertTrue(
+            len(literal_eval(formatted_message)["message_template"])
+            <= formatter._max_length
+        )
 
 
 if __name__ == "__main__":

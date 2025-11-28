@@ -54,7 +54,13 @@ class Constants:
     }
     # fields to be set on the top-level of a Logstash event/message, do not modify this
     # unless you know what you are doing
-    FORMATTER_LOGSTASH_MESSAGE_FIELD_LIST = {"logsource", "program", "type", "tags", "@metadata"}
+    FORMATTER_LOGSTASH_MESSAGE_FIELD_LIST = {
+        "logsource",
+        "program",
+        "type",
+        "tags",
+        "@metadata",
+    }
     # enable rate limiting for error messages (e.g. network errors) emitted by the logger
     # used in LogProcessingWorker, i.e. when transmitting log messages to the Logstash server.
     # Use a string like '5 per minute' or None to disable (default), for details see
@@ -62,4 +68,4 @@ class Constants:
     ERROR_LOG_RATE_LIMIT = None
 
 
-constants = Constants()  # pylint: disable=invalid-name
+constants = Constants()

@@ -7,7 +7,7 @@ from logging import Handler
 
 from sag_py_logging_logstash.constants import constants
 from sag_py_logging_logstash.formatter import LogstashFormatter
-from sag_py_logging_logstash.utils import safe_log_via_print
+from sag_py_logging_logstash.safe_logger import SafeLogger
 from sag_py_logging_logstash.worker import LogProcessingWorker
 
 from .transport import HttpTransport
@@ -29,10 +29,18 @@ class AsynchronousLogstashHandler(Handler):
     """
 
     # ----------------------------------------------------------------------
-    # pylint: disable=too-many-arguments
     def __init__(
-        self, host, port, ssl_enable=True, enable=True, event_ttl=None, transport=None, encoding="utf-8", **kwargs
+        self,
+        host,
+        port,
+        ssl_enable=True,
+        enable=True,
+        event_ttl=None,
+        transport=None,
+        encoding="utf-8",
+        **kwargs,
     ):
+        self._safe_logger = SafeLogger()
         super().__init__()
         self._host = host
         self._port = port
@@ -68,7 +76,12 @@ class AsynchronousLogstashHandler(Handler):
         if self._transport is not None:
             return
         self._transport = HttpTransport(
-            host=self._host, port=self._port, timeout=constants.SOCKET_TIMEOUT, ssl_enable=self._ssl_enable, **kwargs
+            safe_logger=self._safe_logger,
+            host=self._host,
+            port=self._port,
+            timeout=constants.SOCKET_TIMEOUT,
+            ssl_enable=self._ssl_enable,
+            **kwargs,
         )
 
     # ----------------------------------------------------------------------
@@ -76,7 +89,10 @@ class AsynchronousLogstashHandler(Handler):
         if self._worker_thread_is_running():
             return
 
+        self._safe_logger.print_log("info", "Starting logstash log shipping process")
+
         self._worker_thread = LogProcessingWorker(
+            safe_logger=self._safe_logger,
             host=self._host,
             port=self._port,
             transport=self._transport,
@@ -114,16 +130,20 @@ class AsynchronousLogstashHandler(Handler):
 
     # ----------------------------------------------------------------------
     def shutdown(self):
+        self._safe_logger.set_shutdown_in_progress()
+
         if self._worker_thread_is_running():
             self._trigger_worker_shutdown()
             self._wait_for_worker_thread()
             self._reset_worker_thread()
-            self._close_transport()
         else:
             pass
 
     # ----------------------------------------------------------------------
     def _trigger_worker_shutdown(self):
+        self._safe_logger.print_log(
+            "info", "Flushing and shutting down logstash log shipping"
+        )
         self._worker_thread.shutdown()
 
     # ----------------------------------------------------------------------
@@ -133,11 +153,3 @@ class AsynchronousLogstashHandler(Handler):
     # ----------------------------------------------------------------------
     def _reset_worker_thread(self):
         self._worker_thread = None
-
-    # ----------------------------------------------------------------------
-    def _close_transport(self):
-        try:
-            if self._transport is not None:
-                self._transport.close()
-        except Exception as exc:
-            safe_log_via_print("error", f"Error on closing transport: {exc}")
